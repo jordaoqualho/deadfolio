@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, Plus } from "lucide-react";
 import { BuryLink } from "@/components/navigation";
 import { ProjectGrid } from "@/components/deadfolio/project-card";
 import { getRepository } from "@/lib/repositories";
+import { Reveal } from "@/components/ui/reveal";
 export const dynamic = "force-dynamic";
 export default async function Home() {
   const projects = await getRepository().findPublished();
@@ -103,21 +104,23 @@ export default async function Home() {
         </div>
         <ProjectGrid projects={projects.slice(0, 6)} />
       </section>
-      <section className="final-cta shell">
-        <span className="eyebrow">UNFINISHED ≠ WORTHLESS</span>
-        <h2>
-          Got one buried
-          <br />
-          in your GitHub?
-        </h2>
-        <div>
-          <p>
-            You already built it. You already learned from it. Don’t let the
-            story disappear with the repository.
-          </p>
-          <BuryLink>Bury your project</BuryLink>
-        </div>
-      </section>
+      <Reveal>
+        <section className="final-cta shell">
+          <span className="eyebrow">UNFINISHED ≠ WORTHLESS</span>
+          <h2>
+            Got one buried
+            <br />
+            in your GitHub?
+          </h2>
+          <div>
+            <p>
+              You already built it. You already learned from it. Don’t let the
+              story disappear with the repository.
+            </p>
+            <BuryLink>Bury your project</BuryLink>
+          </div>
+        </section>
+      </Reveal>
     </>
   );
 }

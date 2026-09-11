@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, ArrowRight, Plus } from "lucide-react";
 import type { Project } from "@/types/project";
+import { Reveal } from "@/components/ui/reveal";
 import {
   statuses,
   categories,
@@ -78,7 +79,9 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
   return projects.length ? (
     <div className="project-grid">
       {projects.map((p, i) => (
-        <ProjectCard key={p.id} project={p} index={i} />
+        <Reveal key={p.id}>
+          <ProjectCard project={p} index={i} />
+        </Reveal>
       ))}
     </div>
   ) : (
