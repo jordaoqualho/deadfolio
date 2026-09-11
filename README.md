@@ -16,7 +16,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3000. No service credentials are required. Manual submissions, moderation, image processing, and persistence all work locally. To moderate, set a random `ADMIN_PASSWORD` of at least 16 characters in `.env.local`, restart the server, and visit `/admin`.
+Open http://localhost:3535. No service credentials are required. Manual submissions, moderation, image processing, and persistence all work locally. To moderate, set a random `ADMIN_PASSWORD` of at least 16 characters in `.env.local`, restart the server, and visit `/admin`.
 
 ```sh
 npm test
