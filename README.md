@@ -50,7 +50,7 @@ See `.env.example` for the complete starting configuration.
 - `PROJECT_REPOSITORY`: `local` for development or `blob` for Vercel. Defaults to local outside Vercel and Blob on Vercel. Filesystem mode fails closed on Vercel rather than silently losing submissions.
 - `LOCAL_DATA_DIR`: local storage directory, default `.data`.
 - `SEED_DEMOS`: `true` seeds the filesystem repository on its first initialization. `false` starts empty. It does not remove existing records. Blob is seeded explicitly, below.
-- `BLOB_READ_WRITE_TOKEN`: server-only token for a **private** Vercel Blob store.
+- `BLOB_READ_WRITE_TOKEN`: optional static token for a **private** Vercel Blob store. On Vercel, connecting the store is enough: the SDK uses `BLOB_STORE_ID` with OIDC. The token is still needed to seed from your machine.
 - `ADMIN_PASSWORD`: random server-side secret, minimum 16 characters. Empty or short values disable administration. Rotating it invalidates existing sessions.
 - `NEXT_PUBLIC_APP_URL`: canonical origin, without a trailing slash; use the real HTTPS domain in production.
 - `AI_ENABLED`: defaults to `false`. Set `true` only to opt into AI provider usage.
@@ -68,7 +68,7 @@ Stored JSON includes the private creator email. Public reads use an explicit Zod
 ## Vercel Blob and deployment
 
 1. Create/import this repository in Vercel and use the Next.js framework preset. Use Node.js 22 or newer. Build command: `npm run build`.
-2. Create a **private** Blob store in the Vercel project. Connect it so `BLOB_READ_WRITE_TOKEN` is available to the deployment. A public store is unsuitable because submitted records include private email addresses.
+2. Create a **private** Blob store in the Vercel project and connect it to Production and Preview. The dashboard should add `BLOB_STORE_ID`. A public store is unsuitable because submitted records include private email addresses. Redeploy after connecting.
 3. Set `PROJECT_REPOSITORY=blob`, a strong `ADMIN_PASSWORD`, and `NEXT_PUBLIC_APP_URL=https://your-domain`. Leave AI and analytics disabled unless you explicitly want them.
 4. Deploy. No migrations or separate backend are required.
 5. To add the two example records to the Blob store, put its environment values in your local `.env.local` and run `npm run seed`. This explicitly writes demo records to the selected repository. Existing records with the same IDs are preserved. Deployments do not silently create or restore seeds.

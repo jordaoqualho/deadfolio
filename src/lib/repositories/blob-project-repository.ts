@@ -2,6 +2,11 @@ import { put, get, list, del } from "@vercel/blob";
 import { BaseProjectRepository, safeSegment } from "./project-repository";
 import { storedProjectSchema } from "@/lib/schemas/project";
 import type { StoredProject } from "@/types/project";
+
+export function blobStoreConfigured() {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
+}
+
 export class BlobProjectRepository extends BaseProjectRepository {
   private async paths(prefix: string) {
     const blobs: string[] = [];

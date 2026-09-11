@@ -1,10 +1,13 @@
 import { seedProjects } from "../src/data/seed-projects";
-import { BlobProjectRepository } from "../src/lib/repositories/blob-project-repository";
+import {
+  BlobProjectRepository,
+  blobStoreConfigured,
+} from "../src/lib/repositories/blob-project-repository";
 import { LocalProjectRepository } from "../src/lib/repositories/local-project-repository";
 async function main() {
   const blob = process.env.PROJECT_REPOSITORY === "blob";
-  if (blob && !process.env.BLOB_READ_WRITE_TOKEN)
-    throw new Error("Set BLOB_READ_WRITE_TOKEN for a private Blob store.");
+  if (blob && !blobStoreConfigured())
+    throw new Error("Set BLOB_READ_WRITE_TOKEN or BLOB_STORE_ID for a private Blob store.");
   const repo = blob
     ? new BlobProjectRepository()
     : new LocalProjectRepository();
