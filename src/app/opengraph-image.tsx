@@ -30,7 +30,24 @@ export default function Image() {
         <span>Good projects die.</span>
         <span style={{ color: "#a2a59a" }}>Their work doesn’t have to.</span>
       </div>
-      <div style={{ display: "flex", fontSize: 32 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 32 }}>
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 9,
+            background: "#111310",
+            border: "1px solid #34392e",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#c6f36b",
+            fontSize: 22,
+            fontWeight: 700,
+          }}
+        >
+          +
+        </div>
         deadfolio<span style={{ color: "#c6f36b" }}>.</span>
       </div>
     </div>,

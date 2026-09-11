@@ -3,6 +3,7 @@ import Link from "next/link";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Navigation } from "@/components/navigation";
+import { Logo } from "@/components/deadfolio/logo";
 import { AnalyticsProvider } from "@/components/analytics";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
@@ -39,7 +40,7 @@ export default function RootLayout({
         <main id="main">{children}</main>
         <footer className="site-footer shell">
           <Link className="logo" href="/">
-            deadfolio<span className="accent">.</span>
+            <Logo />
           </Link>
           <p>Every failed project has a story worth keeping.</p>
           <span className="mono">END OF FILE. NOT END OF STORY.</span>

@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, Plus, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Logo } from "@/components/deadfolio/logo";
 import { trackEvent } from "./analytics";
 export function BuryLink({
   children = "Bury a Project",
@@ -29,10 +30,7 @@ export function Navigation() {
     <header className="site-header">
       <div className="nav-wrap">
         <Link href="/" aria-label="Deadfolio home" className="logo">
-          <Plus className="brand-mark" strokeWidth={3} />
-          <span>
-            deadfolio<span className="accent">.</span>
-          </span>
+          <Logo />
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
           <Link
