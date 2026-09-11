@@ -203,6 +203,9 @@ export function ProjectEditor({
           {label} <span className="required">*</span>
         </span>
         <select
+          id={key}
+          aria-invalid={!!errors[key]}
+          aria-describedby={errors[key] ? `${key}-error` : undefined}
           value={data[key]}
           onChange={(e) => update(key, e.target.value as never)}
         >
