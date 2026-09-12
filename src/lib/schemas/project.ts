@@ -67,30 +67,16 @@ export const httpUrl = z
       return false;
     }
   }, "Enter a valid http or https URL.");
-const media = z.object({
-  url: z.string().regex(/^\/media\/[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+\.webp$/),
-  alt: z.string().trim().min(1).max(200),
-});
 export const projectContentSchema = z.object({
-  title: z.string().trim().min(2, "Give your project a name.").max(100),
-  tagline: z
-    .string()
-    .trim()
-    .min(10, "Add a one sentence description.")
-    .max(240),
+  title: z.string().trim().min(2).max(100),
+  tagline: z.string().trim().max(240),
   summary: text,
   category: categorySchema,
   stage: stageSchema,
   status: enumeration(statuses),
   primaryCauseOfDeath: causeSchema,
-  causeExplanation: text.min(
-    20,
-    "Tell us why you stopped (at least 20 characters).",
-  ),
-  originalIdea: text.min(
-    20,
-    "Tell us about the idea (at least 20 characters).",
-  ),
+  causeExplanation: text,
+  originalIdea: text,
   whyBuilt: text,
   whatWasBuilt: list,
   whatWentWrong: list,
@@ -103,13 +89,14 @@ export const projectContentSchema = z.object({
   estimatedHours: z.number().int().min(0).max(1000000).nullable(),
   desiredNextSteps: z
     .array(nextStepSchema)
-    .min(1, "Choose what happens next.")
-    .max(5),
-  coverImage: media.nullable(),
-  screenshots: z.array(media).max(5),
+    .min(1)
+    .max(5)
+    .refine((steps) => !(steps.includes("let-it-rest") && steps.length > 1), {
+      message: "Let it rest cannot be combined with other next steps.",
+    }),
   links: z.object({ website: httpUrl, github: httpUrl, demo: httpUrl }),
   creator: z.object({
-    name: z.string().trim().min(2, "Add your display name.").max(100),
+    name: z.string().trim().min(1).max(100),
     profileUrl: httpUrl,
     github: httpUrl,
     linkedin: httpUrl,
@@ -117,47 +104,51 @@ export const projectContentSchema = z.object({
   }),
   contactUrl: httpUrl,
 });
-export const projectSubmissionSchema = projectContentSchema
-  .extend({ email: z.email("Enter a valid private email address.").max(254) })
-  .superRefine((p, ctx) => {
-    if (
-      p.desiredNextSteps.includes("let-it-rest") &&
-      p.desiredNextSteps.length > 1
-    )
-      ctx.addIssue({
-        code: "custom",
-        path: ["desiredNextSteps"],
-        message: "Let it rest cannot be combined with other next steps.",
-      });
-  });
+/**
+ * A public Graveyard record. Everything stored is published: there is no
+ * moderation queue. Provenance fields say where the content came from and
+ * whether the filer proved they own the repository (never, in the MVP).
+ */
 export const projectSchema = projectContentSchema.extend({
   id: z.string().regex(/^[a-zA-Z0-9-]+$/),
   slug: z.string().regex(/^[a-z0-9-]+$/),
-  moderationStatus: z.enum(["draft", "submitted", "published", "rejected"]),
   createdAt: z.iso.datetime(),
-  publishedAt: z.iso.datetime().optional(),
+  publishedAt: z.iso.datetime(),
   isDemo: z.boolean().default(false),
-  isFounder: z.boolean().default(false),
+  source: z.enum(["autopsy", "sample", "manual"]).default("manual"),
+  ownershipVerified: z.boolean().default(false),
+  causeSource: z.enum(["creator", "inferred"]).default("creator"),
 });
-// Pending records may be incomplete. Only publication uses the strict public schema.
 export const storedProjectSchema = projectSchema.extend({
-  tagline: z.string().trim().max(240),
-  originalIdea: text,
-  causeExplanation: text,
-  email: z.email(),
-  submissionType: z.enum(["structured", "raw"]).default("structured"),
-  rawStory: z.string().max(15000).default(""),
   locale: z.enum(["en", "pt"]).default("en"),
+  autopsyKey: z.string().max(400).optional(),
 });
-export const rawSubmissionSchema = z.object({
-  title: z.string().trim().min(2).max(100),
-  story: z.string().trim().min(50).max(15000),
-  url: httpUrl,
-  nextStep: nextStepSchema,
-  creatorName: z.string().trim().min(2).max(100),
-  email: z.email().max(254),
-  locale: z.enum(["en", "pt"]).default("en"),
-});
+export const emptyProjectContent: z.infer<typeof projectContentSchema> = {
+  title: "",
+  tagline: "",
+  summary: "",
+  category: "other",
+  stage: "other",
+  status: "dead",
+  primaryCauseOfDeath: "other",
+  causeExplanation: "",
+  originalIdea: "",
+  whyBuilt: "",
+  whatWasBuilt: [],
+  whatWentWrong: [],
+  whatWorked: [],
+  lessons: [],
+  survivingAssets: [],
+  technologies: [],
+  developmentDuration: "",
+  developmentPeriod: "",
+  estimatedHours: null,
+  desiredNextSteps: ["let-it-rest"],
+  links: { website: "", github: "", demo: "" },
+  creator: { name: "", profileUrl: "", github: "", linkedin: "", x: "" },
+  contactUrl: "",
+};
+/** Editable fields offered after an autopsy. Null means "leave the autopsy's value". */
 export const projectDraftSchema = z.object({
   title: z.string().max(100).nullable(),
   tagline: z.string().max(240).nullable(),

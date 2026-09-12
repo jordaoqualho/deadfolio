@@ -46,18 +46,17 @@ export class LocalProjectRepository extends BaseProjectRepository {
       }
     })());
   }
-  async findAll() {
+  protected async readAll() {
     await this.init();
     const files = (await readdir(path.join(this.root, "projects"))).filter(
       (f) => f.endsWith(".json"),
     );
     return Promise.all(
-      files.map(async (f) =>
-        storedProjectSchema.parse(
+      files.map(
+        async (f) =>
           JSON.parse(
             await readFile(path.join(this.root, "projects", f), "utf8"),
-          ),
-        ),
+          ) as unknown,
       ),
     );
   }
@@ -79,34 +78,5 @@ export class LocalProjectRepository extends BaseProjectRepository {
     await rm(path.join(this.root, "projects", `${safeSegment(id)}.json`), {
       force: true,
     });
-    await rm(path.join(this.root, "media", safeSegment(id)), {
-      recursive: true,
-      force: true,
-    });
-  }
-  async saveMedia(id: string, name: string, bytes: Buffer) {
-    const dir = path.join(this.root, "media", safeSegment(id));
-    await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, safeSegment(name)), bytes);
-    return `/media/${id}/${name}`;
-  }
-  async deleteMedia(id: string, names: string[]) {
-    await Promise.all(
-      names.map((name) =>
-        rm(path.join(this.root, "media", safeSegment(id), safeSegment(name)), {
-          force: true,
-        }),
-      ),
-    );
-  }
-  async readMedia(id: string, name: string) {
-    try {
-      return await readFile(
-        path.join(this.root, "media", safeSegment(id), safeSegment(name)),
-      );
-    } catch (e) {
-      if ((e as NodeJS.ErrnoException).code === "ENOENT") return null;
-      throw e;
-    }
   }
 }

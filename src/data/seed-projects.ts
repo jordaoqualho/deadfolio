@@ -1,10 +1,11 @@
+import { emptyProjectContent } from "@/lib/schemas/project";
 import type { StoredProject } from "@/types/project";
-import { emptySubmission } from "@/lib/schemas/empty-submission";
-// Both are explicitly labeled examples. Replace or delete via /admin before launch.
+// Both are explicitly labeled samples. They are seeded locally only and hidden
+// in production; delete them from the data store before launch if unwanted.
 // Fintal's supplied facts are preserved; unknown dates, stack and metrics are omitted.
 export const seedProjects: StoredProject[] = [
   {
-    ...emptySubmission,
+    ...emptyProjectContent,
     id: "seed-fintal",
     slug: "fintal",
     title: "Fintal",
@@ -25,19 +26,17 @@ export const seedProjects: StoredProject[] = [
       "Calendar functionality",
       "Notifications",
     ],
-    creator: { ...emptySubmission.creator, name: "Fintal · sample record" },
-    email: "seed@example.invalid",
-    moderationStatus: "published",
+    creator: { ...emptyProjectContent.creator, name: "Fintal · sample record" },
     createdAt: "2026-01-01T00:00:00.000Z",
     publishedAt: "2026-01-01T00:00:00.000Z",
     isDemo: true,
-    isFounder: false,
-    submissionType: "structured",
-    rawStory: "",
+    source: "sample",
+    ownershipVerified: false,
+    causeSource: "creator",
     locale: "en",
   },
   {
-    ...emptySubmission,
+    ...emptyProjectContent,
     id: "seed-tabula",
     slug: "tabula",
     title: "Tabula",
@@ -78,15 +77,13 @@ export const seedProjects: StoredProject[] = [
     ],
     technologies: ["TypeScript", "React"],
     desiredNextSteps: ["adoption", "open-source"],
-    creator: { ...emptySubmission.creator, name: "Demo creator" },
-    email: "demo@example.invalid",
-    moderationStatus: "published",
+    creator: { ...emptyProjectContent.creator, name: "Demo creator" },
     createdAt: "2026-01-02T00:00:00.000Z",
     publishedAt: "2026-01-02T00:00:00.000Z",
     isDemo: true,
-    isFounder: false,
-    submissionType: "structured",
-    rawStory: "",
+    source: "sample",
+    ownershipVerified: false,
+    causeSource: "creator",
     locale: "en",
   },
 ];

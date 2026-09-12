@@ -25,14 +25,14 @@ export class BlobProjectRepository extends BaseProjectRepository {
     if (!result || result.statusCode !== 200) return null;
     return Buffer.from(await new Response(result.stream).arrayBuffer());
   }
-  async findAll() {
+  protected async readAll() {
     return Promise.all(
       (await this.paths("deadfolio/projects/"))
         .filter((p) => p.endsWith(".json"))
         .map(async (path) => {
           const bytes = await this.read(path);
           if (!bytes) throw new Error("Stored project could not be read.");
-          return storedProjectSchema.parse(JSON.parse(bytes.toString()));
+          return JSON.parse(bytes.toString()) as unknown;
         }),
     );
   }
@@ -50,29 +50,6 @@ export class BlobProjectRepository extends BaseProjectRepository {
     );
   }
   async delete(id: string) {
-    safeSegment(id);
-    await del([
-      `deadfolio/projects/${id}.json`,
-      ...(await this.paths(`deadfolio/media/${id}/`)),
-    ]);
-  }
-  async saveMedia(id: string, name: string, bytes: Buffer) {
-    await put(
-      `deadfolio/media/${safeSegment(id)}/${safeSegment(name)}`,
-      bytes,
-      { access: "private", addRandomSuffix: false, contentType: "image/webp" },
-    );
-    return `/media/${id}/${name}`;
-  }
-  async deleteMedia(id: string, names: string[]) {
-    if (names.length)
-      await del(
-        names.map(
-          (name) => `deadfolio/media/${safeSegment(id)}/${safeSegment(name)}`,
-        ),
-      );
-  }
-  async readMedia(id: string, name: string) {
-    return this.read(`deadfolio/media/${safeSegment(id)}/${safeSegment(name)}`);
+    await del(`deadfolio/projects/${safeSegment(id)}.json`);
   }
 }
