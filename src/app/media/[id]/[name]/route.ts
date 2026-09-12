@@ -11,7 +11,10 @@ export async function GET(
   const project = await repo.findById(id);
   if (
     !project ||
-    (project.moderationStatus !== "published" && !(await isAdmin()))
+    ((project.moderationStatus !== "published" ||
+      project.submissionType === "raw" ||
+      (process.env.NODE_ENV === "production" && project.isDemo)) &&
+      !(await isAdmin()))
   )
     return new Response(null, { status: 404 });
   const url = `/media/${id}/${name}`;

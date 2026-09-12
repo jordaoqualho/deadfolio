@@ -31,6 +31,10 @@ export const seedProjects: StoredProject[] = [
     createdAt: "2026-01-01T00:00:00.000Z",
     publishedAt: "2026-01-01T00:00:00.000Z",
     isDemo: true,
+    isFounder: false,
+    submissionType: "structured",
+    rawStory: "",
+    locale: "en",
   },
   {
     ...emptySubmission,
@@ -80,5 +84,9 @@ export const seedProjects: StoredProject[] = [
     createdAt: "2026-01-02T00:00:00.000Z",
     publishedAt: "2026-01-02T00:00:00.000Z",
     isDemo: true,
+    isFounder: false,
+    submissionType: "structured",
+    rawStory: "",
+    locale: "en",
   },
 ];

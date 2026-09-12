@@ -12,6 +12,8 @@ export default async function Preview({
   if (!(await isAdmin())) redirect("/admin");
   const p = await getRepository().findById((await params).id);
   if (!p) notFound();
+  if (p.submissionType === "raw" || !projectSchema.safeParse(p).success)
+    redirect(`/admin/${p.id}/edit`);
   return (
     <>
       <div className="shell admin-preview-actions">

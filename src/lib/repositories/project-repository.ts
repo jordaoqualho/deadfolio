@@ -1,5 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { projectSchema, storedProjectSchema } from "@/lib/schemas/project";
+import {
+  projectSchema,
+  storedProjectSchema,
+  projectSubmissionSchema,
+} from "@/lib/schemas/project";
 import type {
   Project,
   ProjectSubmission,
@@ -32,7 +36,12 @@ export abstract class BaseProjectRepository implements ProjectRepository {
   abstract deleteMedia(id: string, names: string[]): Promise<void>;
   async findPublished() {
     return (await this.findAll())
-      .filter((p) => p.moderationStatus === "published")
+      .filter(
+        (p) =>
+          p.moderationStatus === "published" &&
+          p.submissionType !== "raw" &&
+          (process.env.NODE_ENV !== "production" || !p.isDemo),
+      )
       .map((p) => projectSchema.parse(p))
       .sort((a, b) =>
         (b.publishedAt ?? b.createdAt).localeCompare(
@@ -68,7 +77,12 @@ export abstract class BaseProjectRepository implements ProjectRepository {
   }
   async update(id: string, input: ProjectSubmission) {
     const old = await this.required(id);
-    const p = storedProjectSchema.parse({ ...old, ...input });
+    const valid = projectSubmissionSchema.parse(input);
+    const p = storedProjectSchema.parse({
+      ...old,
+      ...valid,
+      submissionType: "structured",
+    });
     await this.save(p);
     return p;
   }
@@ -79,6 +93,9 @@ export abstract class BaseProjectRepository implements ProjectRepository {
   }
   async approve(id: string) {
     const p = await this.required(id);
+    if (p.submissionType === "raw")
+      throw new Error("Structure this story before publishing.");
+    projectSubmissionSchema.parse(p);
     p.moderationStatus = "published";
     p.publishedAt ??= new Date().toISOString();
     await this.save(p);

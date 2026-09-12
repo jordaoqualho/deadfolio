@@ -1,12 +1,9 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/i18n/metadata";
 import { StoryInput } from "@/components/submission/story-input";
 import { aiConfigured } from "@/lib/ai/extract-project";
-export const metadata: Metadata = {
-  title: "Bury a Project",
-  description:
-    "Tell us what you built, why it stopped, and what survived. No account required.",
-  alternates: { canonical: "/bury" },
-};
+export async function generateMetadata() {
+  return pageMetadata("/bury", "Bury a Project", "Tell us what happened.");
+}
 export const dynamic = "force-dynamic";
 export default function Bury() {
   return (

@@ -92,10 +92,12 @@ export function ProjectEditor({
   initial,
   story = "",
   editId,
+  founder = false,
 }: {
   initial: ProjectSubmission;
   story?: string;
   editId?: string;
+  founder?: boolean;
 }) {
   const [data, setData] = useState<ProjectSubmission>(() =>
     structuredClone(initial),
@@ -312,6 +314,7 @@ export function ProjectEditor({
       }
       const form = new FormData();
       form.set("project", JSON.stringify(data));
+      if (founder) form.set("founder", "true");
       if (cover) {
         form.set("cover", cover.file);
         form.set("coverAlt", cover.alt);
@@ -326,7 +329,7 @@ export function ProjectEditor({
         setErrors(result.fields || {});
         return;
       }
-      if (editId) {
+      if (editId || founder) {
         router.push("/admin");
         router.refresh();
       } else {

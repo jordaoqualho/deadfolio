@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { projectSubmissionSchema } from "@/lib/schemas/project";
 import { getRepository } from "@/lib/repositories";
-import { submitProject } from "@/lib/services/submit-project";
+import { submitStory, submitProject } from "@/lib/services/submit-project";
 import { attachMedia } from "@/lib/services/media";
 import {
   adminConfigured,
@@ -26,7 +26,8 @@ export async function saveSubmission(
   editId?: string,
 ): Promise<ActionResult> {
   try {
-    if (editId) await requireAdmin();
+    const founder = form.get("founder") === "true";
+    if (editId || founder) await requireAdmin();
     else if (!rateLimit(`submit:${await clientKey()}`, 10))
       return {
         ok: false,
@@ -80,7 +81,10 @@ export async function saveSubmission(
     );
     try {
       if (editId) await repo.update(id, input);
-      else await submitProject(input, repo, id);
+      else {
+        const created = await submitProject(input, repo, id);
+        if (founder) await repo.save({ ...created, isFounder: true });
+      }
     } catch (error) {
       if (!editId) await repo.delete(id).catch(() => {});
       else
@@ -160,5 +164,20 @@ export async function moderateProject(
       ok: false,
       error: "The change could not be saved. Check your session and try again.",
     };
+  }
+}
+
+export async function saveStory(
+  input: unknown,
+  draft?: unknown,
+): Promise<ActionResult> {
+  try {
+    if (!rateLimit(`submit:${await clientKey()}`, 10))
+      return { ok: false, error: "rate-limit" };
+    const p = await submitStory(input, getRepository(), draft);
+    revalidatePath("/admin");
+    return { ok: true, id: p.id };
+  } catch {
+    return { ok: false, error: "save-failed" };
   }
 }

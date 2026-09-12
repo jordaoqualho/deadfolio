@@ -19,7 +19,8 @@ export class LocalProjectRepository extends BaseProjectRepository {
     private root = path.resolve(
       /* turbopackIgnore: true */ process.env.LOCAL_DATA_DIR || ".data",
     ),
-    private seed = process.env.SEED_DEMOS !== "false",
+    private seed = process.env.NODE_ENV !== "production" &&
+      process.env.SEED_DEMOS !== "false",
   ) {
     super();
   }

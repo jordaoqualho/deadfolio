@@ -137,8 +137,27 @@ export const projectSchema = projectContentSchema.extend({
   createdAt: z.iso.datetime(),
   publishedAt: z.iso.datetime().optional(),
   isDemo: z.boolean().default(false),
+  isFounder: z.boolean().default(false),
 });
-export const storedProjectSchema = projectSchema.extend({ email: z.email() });
+// Pending records may be incomplete. Only publication uses the strict public schema.
+export const storedProjectSchema = projectSchema.extend({
+  tagline: z.string().trim().max(240),
+  originalIdea: text,
+  causeExplanation: text,
+  email: z.email(),
+  submissionType: z.enum(["structured", "raw"]).default("structured"),
+  rawStory: z.string().max(15000).default(""),
+  locale: z.enum(["en", "pt"]).default("en"),
+});
+export const rawSubmissionSchema = z.object({
+  title: z.string().trim().min(2).max(100),
+  story: z.string().trim().min(50).max(15000),
+  url: httpUrl,
+  nextStep: nextStepSchema,
+  creatorName: z.string().trim().min(2).max(100),
+  email: z.email().max(254),
+  locale: z.enum(["en", "pt"]).default("en"),
+});
 export const projectDraftSchema = z.object({
   title: z.string().max(100).nullable(),
   tagline: z.string().max(240).nullable(),
