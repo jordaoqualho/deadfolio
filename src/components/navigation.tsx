@@ -43,6 +43,12 @@ export function Navigation() {
             {t("Graveyard")}{" "}
           </Link>
           <Link
+            href="/autopsy"
+            aria-current={pathname.startsWith("/autopsy") ? "page" : undefined}
+          >
+            {t("Autopsy")}{" "}
+          </Link>
+          <Link
             href="/about"
             aria-current={pathname === "/about" ? "page" : undefined}
           >
@@ -71,6 +77,9 @@ export function Navigation() {
         >
           <Link href="/graveyard" onClick={() => setOpen(false)}>
             {t("Graveyard")}{" "}
+          </Link>
+          <Link href="/autopsy" onClick={() => setOpen(false)}>
+            {t("Autopsy")}{" "}
           </Link>
           <Link href="/about" onClick={() => setOpen(false)}>
             {t("About")}{" "}

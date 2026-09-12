@@ -144,7 +144,14 @@ async function HomeContent() {
                 "You already built it. You already learned from it. Don’t let the story disappear with the repository.",
               )}{" "}
             </p>
-            <BuryLink>{t("Bury your project")}</BuryLink>
+            <div className="hero-buttons">
+              <Link className="button primary" href="/autopsy">
+                {t("🔬 Find it on GitHub")}
+              </Link>
+              <BuryLink className="button secondary">
+                {t("Bury your project")}
+              </BuryLink>
+            </div>
           </div>
         </section>
       </Reveal>

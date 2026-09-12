@@ -9,10 +9,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       "/graveyard",
       "/about",
       "/bury",
+      "/autopsy",
       "/pt",
       "/pt/graveyard",
       "/pt/about",
       "/pt/bury",
+      "/pt/autopsy",
     ].map((p) => ({
       url: `${siteUrl}${p}`,
     })),

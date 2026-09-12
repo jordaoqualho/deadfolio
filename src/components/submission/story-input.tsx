@@ -212,6 +212,12 @@ export function StoryInput({ aiEnabled }: { aiEnabled: boolean }) {
           "Write it like you're explaining the project to a friend. You can also paste a README, old launch post, notes or anything else you still have.",
         )}
       </p>
+      <p className="story-helper autopsy-hint">
+        {t("Is it on GitHub?")}{" "}
+        <LocalLink href="/autopsy" className="text-link">
+          {t("Let Deadfolio read the repository instead.")}
+        </LocalLink>
+      </p>
       <fieldset disabled={!!busy} className="story-fields">
         <label className="field">
           <span>{t("Project name")}</span>
