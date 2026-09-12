@@ -5,6 +5,11 @@ import { redirect } from "next/navigation";
 import { projectSubmissionSchema } from "@/lib/schemas/project";
 import { getRepository } from "@/lib/repositories";
 import { submitStory, submitProject } from "@/lib/services/submit-project";
+import {
+  autopsyPublishSchema,
+  submitAutopsyProject,
+} from "@/lib/services/publish-autopsy";
+import { findAutopsy } from "@/lib/services/autopsy";
 import { attachMedia } from "@/lib/services/media";
 import {
   adminConfigured,
@@ -178,6 +183,31 @@ export async function saveStory(
     revalidatePath("/admin");
     return { ok: true, id: p.id };
   } catch {
+    return { ok: false, error: "save-failed" };
+  }
+}
+
+/** Files a pending submission built from a cached repository autopsy. */
+export async function publishAutopsy(input: unknown): Promise<ActionResult> {
+  try {
+    if (!rateLimit(`submit:${await clientKey()}`, 10))
+      return { ok: false, error: "rate-limit" };
+    const parsed = autopsyPublishSchema.safeParse(input);
+    if (!parsed.success) return { ok: false, error: "invalid" };
+    const autopsy = await findAutopsy(parsed.data.key);
+    if (!autopsy) return { ok: false, error: "missing-autopsy" };
+    const p = await submitAutopsyProject(
+      autopsy,
+      parsed.data,
+      getRepository(),
+    );
+    revalidatePath("/admin");
+    return { ok: true, id: p.id };
+  } catch (error) {
+    console.error(
+      "Autopsy publish failed:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
     return { ok: false, error: "save-failed" };
   }
 }
