@@ -48,9 +48,9 @@ export function Navigation() {
           >
             {t("About")}{" "}
           </Link>
-          <LanguageSwitcher className="desktop-language-switcher" />
         </nav>
         <div className="nav-actions">
+          <LanguageSwitcher className="desktop-language-switcher" />
           <BuryLink />
           <button
             className="icon-button mobile-menu"

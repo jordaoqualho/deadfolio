@@ -243,10 +243,12 @@ p {
 }
 .desktop-nav {
   display: flex;
+  align-items: center;
   gap: 32px;
   margin-left: auto;
   color: var(--muted);
   font-size: 0.875rem;
+  line-height: 1;
 }
 .desktop-nav a:hover,
 .desktop-nav a[aria-current] {
@@ -255,7 +257,7 @@ p {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
 .nav-actions .button {
   min-height: 42px;
@@ -2419,6 +2421,7 @@ select:disabled {
   align-items: center;
   gap: 10px;
   white-space: nowrap;
+  flex: none;
 }
 .language-switcher-label {
   font-size: 0.625rem;
@@ -2429,37 +2432,38 @@ select:disabled {
 .language-switcher-options {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  height: 42px;
   padding: 3px;
   border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--surface);
+  border-radius: 3px;
+  background: var(--bg);
 }
 .language-switcher-option {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 52px;
-  min-height: 34px;
-  padding: 0 10px;
+  min-width: 44px;
+  height: 100%;
+  padding: 0 11px;
   border-radius: 2px;
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.6875rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   color: var(--muted);
 }
 .language-switcher-option[aria-current="true"] {
-  color: var(--bg);
+  color: #17200d;
   background: var(--accent);
 }
 .language-switcher-option:hover {
   color: var(--text);
 }
 .language-switcher-option[aria-current="true"]:hover {
-  color: var(--bg);
+  color: #17200d;
+  background: #d6ff89;
 }
-.desktop-language-switcher {
-  margin-left: 8px;
+.desktop-language-switcher .language-switcher-label {
+  display: none;
 }
 .mobile-language-switcher {
   margin-top: 8px;
@@ -2505,10 +2509,8 @@ select:disabled {
   margin: 12px 0 18px;
 }
 @media (max-width: 760px) {
-  .nav-wrap {
-    flex-wrap: wrap;
-    padding-block: 12px;
-    gap: 8px;
+  .nav-actions > .desktop-language-switcher {
+    display: none;
   }
   .nav-actions {
     gap: 8px;
@@ -2519,14 +2521,5 @@ select:disabled {
   }
   .hero-pt h1 {
     font-size: clamp(2.3rem, 8vw, 3.8rem);
-  }
-}
-@media (max-width: 420px) {
-  .nav-actions {
-    flex-wrap: wrap;
-    flex: 1;
-  }
-  .nav-actions > .button {
-    margin-left: auto;
   }
 }
