@@ -38,10 +38,13 @@ Next.js 16.3.5 (stable at implementation), App Router, React, strict TypeScript,
 - `src/lib/services/submit-project.ts`: reusable, UI-independent submission service. It validates input and always creates a submitted record, never a published one.
 - `src/lib/services/media.ts`: image decoding, metadata stripping and compression.
 - `src/lib/ai/extract-project.ts`: optional structured extraction.
+- `src/lib/ai/autopsy.ts`, `src/lib/github/`, `src/lib/services/autopsy.ts`: Repository Autopsy (see below).
+- `src/lib/repositories/kv-store.ts`: hashed-key JSON cache/quota store with local and private Blob backends.
 - `src/components/submission/`: story entry, progressive editor and review.
+- `src/components/autopsy/`: GitHub discovery, autopsy report, creator confirmation and publish panel.
 - `src/data/seed-projects.ts`: editable sample projects.
 
-Routes: `/`, `/graveyard`, `/projects/[slug]`, `/bury`, `/about`, `/admin`. Admin previews and editors are nested under `/admin/[id]`. Private media is served through `/media/[id]/[name]`; internal Blob URLs are never project navigation URLs.
+Routes: `/`, `/graveyard`, `/projects/[slug]`, `/bury`, `/autopsy`, `/autopsy/[owner]/[repo]`, `/about`, `/admin`. Admin previews and editors are nested under `/admin/[id]`. Private media is served through `/media/[id]/[name]`; internal Blob URLs are never project navigation URLs. `/api/autopsy` runs a repository autopsy.
 
 ## Configuration
 
@@ -53,7 +56,9 @@ See `.env.example` for the complete starting configuration.
 - `BLOB_READ_WRITE_TOKEN`: optional static token for a **private** Vercel Blob store. On Vercel, connecting the store is enough: the SDK uses `BLOB_STORE_ID` with OIDC. The token is still needed to seed from your machine.
 - `ADMIN_PASSWORD`: random server-side secret, minimum 16 characters. Empty or short values disable administration. Rotating it invalidates existing sessions.
 - `NEXT_PUBLIC_APP_URL`: canonical origin, without a trailing slash; use the real HTTPS domain in production.
-- `GEMINI_API_KEY`: optional server-only Google Gemini API key. Its presence enables the formatting CTA. The former `AI_ENABLED` flag is no longer used.
+- `GEMINI_API_KEY`: optional server-only Google Gemini API key. Its presence enables the formatting CTA and Repository Autopsy. The former `AI_ENABLED` flag is no longer used.
+- `GITHUB_TOKEN`: optional server-only GitHub token for Repository Autopsy. Use a fine-grained token with read-only access to public repositories. It is never sent to the browser. Without it, GitHub allows 60 unauthenticated requests per hour per IP, which is enough for local testing but not for production.
+- `MAX_REPOSITORIES_PER_SCAN` (100), `MAX_AUTOPSIES_PER_IP_PER_DAY` (3), `MAX_CONCURRENT_AUTOPSIES_PER_IP` (1), `MAX_AUTOPSY_FILES` (12), `MAX_AUTOPSY_INPUT_TOKENS` (30000), `MAX_AUTOPSY_OUTPUT_TOKENS` (2000): hard limits for Repository Autopsy, read at request time.
 - `NEXT_PUBLIC_ANALYTICS_ENABLED`: defaults to `false`. Set `true` only after opting into Vercel Web Analytics. It is a build-time public flag; rebuild after changing it.
 
 Never commit `.env.local` or credentials. No infrastructure is provisioned by the application.
@@ -84,6 +89,22 @@ Create a Gemini API key in Google AI Studio. Set `GEMINI_API_KEY`, then restart/
 The form explains that text is sent to Google. Never paste credentials or confidential material. With no key, the form silently offers **Submit my story**. If extraction fails or times out, all six inputs remain in the form and the same direct-submission CTA appears. Visitors never enter the long structured editor; it is reserved for moderation. The prompt reduces unsupported generation but cannot guarantee factual accuracy; human review remains essential.
 
 The endpoint limits input to 15,000 characters, output to 5,000 tokens, uses no automatic retries, times out after 45 seconds, and has simple per-process per-client/global request limits. Those limits are best-effort on serverless deployments, not a distributed quota or spending guarantee. Set provider-level quotas before opting in.
+
+## Repository Autopsy
+
+`/autopsy` turns a public GitHub repository into an evidence-based postmortem without asking the creator to describe it first. The flow is: GitHub username → Deadfolio discovers forgotten repositories → the visitor picks one → **Run Autopsy** → report → the creator confirms or corrects the cause of death in one sentence → **Add to my Deadfolio** → **Publish** (or **Edit details**). Everything is moderated like any other submission.
+
+**Discovery is deterministic.** Up to `MAX_REPOSITORIES_PER_SCAN` public repositories the user owns are fetched (`sort=pushed`) and scored from metadata only: days since the last push (piecewise ramp from 30 days to two years), archive/disabled status, fork status, empty size, a short activity span followed by long silence, age and abandoned open issues. Scores map to **Active** (<30), **Possibly stale** (30–59), **Likely dead** (≥60) and **Archived**. The strongest non-archived label is "likely dead": inactivity never proves death. No AI runs during discovery. Repository lists are cached for six hours, repository metadata for 30 minutes and default-branch SHAs for ten minutes; scans are limited to 30 per hour per client.
+
+**One Gemini generation per repository version.** An autopsy is identified by `owner/repository/defaultBranchSHA`. If a report exists for the current SHA it is returned from the cache, regardless of who asks or in which language (the UI notes when a cached report was generated in the other locale). If the SHA moved since the last report, the page shows **New activity detected. Run a new autopsy?** with the previous report still available. The model is `gemini-2.5-flash` with structured output (`Output.object`), `MAX_AUTOPSY_OUTPUT_TOKENS` output tokens, `maxRetries: 0` and exactly one manual retry after a transient failure (5xx, network, timeout), never after a `429 RESOURCE_EXHAUSTED`. Provider errors are mapped to short codes; visitors see neutral copy, and provider failures refund the visitor's daily quota.
+
+**Evidence collection** sends repository metadata, languages, the README (capped), the file tree (capped), the last 30 commits, up to five releases and up to `MAX_AUTOPSY_FILES` files chosen by a deterministic ranking that prefers manifests, deployment/config, schema, entry points and architecture docs over deep source files. The total is trimmed to `MAX_AUTOPSY_INPUT_TOKENS` by dropping the lowest-priority files first. Path rules exclude `.env*`, key/certificate material, anything named like credentials/secrets/tokens, `node_modules`, `vendor`, build output, lockfiles, binaries and files over 120 KB; content is additionally scrubbed for key-like assignments and known token shapes, and any file containing a private key block is dropped. Only public repositories are analyzed.
+
+**Epistemics.** The system prompt requires the model to separate evidence (observable), inference (hedged with "likely"/"suggests"/"based on repository evidence") and unknowns, to never invent users, revenue, demand, feedback, motivation or the real reason development stopped, to treat README claims as claims and repository text as untrusted data, and to keep its verdict consistent with the deterministic classification unless evidence contradicts it. Output is normalized (scores clamped to 0–100, items trimmed, blanks dropped) before being validated against the strict `repositoryAutopsySchema` in `src/lib/schemas/autopsy.ts`.
+
+**Publishing.** The report becomes the initial project content: summary, idea assessment, strengths → what worked, weaknesses → what went wrong, surviving assets, technologies, category and stage, development period/duration derived from GitHub dates, GitHub links, and status (`dead` for likely-dead/archived, `frozen` for stale). Lessons stay empty because the repository cannot know them. If the creator answers **Not really** and writes what actually killed it, that text becomes `causeExplanation` with category `other`; otherwise the top inferred cause is used, hedged. The creator's answer is kept in the browser and stored with the submission only, never written into the shared autopsy cache, so anonymous visitors cannot rewrite each other's reports. The default path asks only for creator name, private email and a next-step choice; **Edit details** opens the same editable preview used for story drafts.
+
+**Limits.** `MAX_CONCURRENT_AUTOPSIES_PER_IP` is enforced in-process; `MAX_AUTOPSIES_PER_IP_PER_DAY` is a daily, salted-hash counter in the cache store, so it survives restarts on Blob; a fixed global guard of 40 generations per hour per process protects spend further. Cached autopsies never count. GitHub rate-limit headers (`x-ratelimit-remaining`, `x-ratelimit-reset`, `retry-after`) are honoured: once exhausted, the app fails fast until the reset time and tells the visitor when to retry. AI or GitHub failures degrade to a notice; repository browsing keeps working.
 
 ## Moderation and privacy
 
