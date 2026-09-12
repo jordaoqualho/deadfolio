@@ -20,7 +20,7 @@ function withLocaleCookie(response: NextResponse, locale: Locale) {
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isPtPath = /^\/pt(?:\/|$)/.test(pathname);
-  const isPrivatePath = /^\/(admin|api|media)(\/|$)/.test(
+  const isPrivatePath = /^\/api(\/|$)/.test(
     pathname.replace(/^\/pt/, "") || "/",
   );
   const savedLocale = readLocaleCookie(
@@ -51,7 +51,7 @@ export function proxy(request: NextRequest) {
   if (isPtPath) {
     const url = request.nextUrl.clone();
     url.pathname = url.pathname.replace(/^\/pt/, "") || "/";
-    if (/^\/(admin|api|media)(\/|$)/.test(url.pathname)) {
+    if (/^\/api(\/|$)/.test(url.pathname)) {
       return withLocaleCookie(
         NextResponse.next({ request: { headers } }),
         locale,
@@ -70,4 +70,4 @@ export function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/((?!_next|api|media|.*\\..*).*)"] };
+export const config = { matcher: ["/((?!_next|api|.*\\..*).*)"] };
