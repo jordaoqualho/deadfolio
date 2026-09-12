@@ -39,7 +39,7 @@ export function AdminLogin({ configured }: { configured: boolean }) {
     </form>
   );
 }
-export function AdminActions({ id, status }: { id: string; status: string }) {
+export function AdminActions({ id, status, canPublish = true }: { id: string; status: string; canPublish?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -72,7 +72,7 @@ export function AdminActions({ id, status }: { id: string; status: string }) {
         <Link className="button secondary small" href={`/admin/${id}/edit`}>
           Edit
         </Link>
-        {status !== "published" && (
+        {status !== "published" && canPublish && (
           <button
             className="button primary small"
             disabled={busy}

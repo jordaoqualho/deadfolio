@@ -1,6 +1,8 @@
 import { adminConfigured, isAdmin } from "@/lib/security";
 import { getRepository } from "@/lib/repositories";
 import { AdminLogin, AdminActions } from "@/components/admin";
+import Link from "next/link";
+import { projectSubmissionSchema } from "@/lib/schemas/project";
 import { logoutAdmin } from "@/app/actions";
 export default async function Admin() {
   if (!(await isAdmin()))
@@ -12,6 +14,13 @@ export default async function Admin() {
   const projects = (await getRepository().findAll()).sort((a, b) =>
     b.createdAt.localeCompare(a.createdAt),
   );
+  const realPublished = projects.filter(
+    (p) =>
+      !p.isDemo &&
+      p.submissionType !== "raw" &&
+      p.moderationStatus === "published",
+  );
+  const founders = realPublished.filter((p) => p.isFounder);
   return (
     <div className="shell page-space">
       <div className="section-heading">
@@ -22,6 +31,28 @@ export default async function Admin() {
         <form action={logoutAdmin}>
           <button className="button secondary">Sign out</button>
         </form>
+      </div>
+      <div
+        className={
+          realPublished.length === 0
+            ? "form-error launch-readiness"
+            : "notice launch-readiness"
+        }
+        role="status"
+      >
+        <strong>
+          {realPublished.length === 0
+            ? "Not ready to launch: no real published projects."
+            : `${realPublished.length} real projects in the public archive.`}
+        </strong>
+        <p>
+          {founders.length}/2 founder projects published. Add and review at
+          least two genuine founder projects before launch. Sample records do
+          not count and are hidden in production.
+        </p>
+        <Link href="/admin/new" className="button primary small">
+          Add a founder project
+        </Link>
       </div>
       {(["submitted", "published", "rejected", "draft"] as const).map(
         (status) => (
@@ -47,7 +78,13 @@ export default async function Admin() {
                       {p.title}
                       {p.isDemo && <span className="inline-demo">SAMPLE</span>}
                     </h3>
-                    <p>{p.tagline}</p>
+                    <p>
+                      {p.submissionType === "raw"
+                        ? "Raw story · needs structuring before publication"
+                        : "Structured record"}
+                      {p.isFounder ? " · Founder project" : ""}
+                    </p>
+                    <p>{p.tagline || p.rawStory.slice(0, 180)}</p>
                     <p className="mono">
                       {p.creator.name} ·{" "}
                       {new Date(p.createdAt).toLocaleDateString("en-US")}
@@ -58,7 +95,14 @@ export default async function Admin() {
                       <code>{p.id}</code>
                     </details>
                   </div>
-                  <AdminActions id={p.id} status={status} />
+                  <AdminActions
+                    id={p.id}
+                    status={status}
+                    canPublish={
+                      p.submissionType !== "raw" &&
+                      projectSubmissionSchema.safeParse(p).success
+                    }
+                  />
                 </article>
               ))}
             {!projects.some((p) => p.moderationStatus === status) && (
