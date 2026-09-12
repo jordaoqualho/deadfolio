@@ -2,10 +2,12 @@ import { Suspense } from "react";
 import { pageMetadata } from "@/lib/i18n/metadata";
 import { getLocale, getTranslations } from "@/lib/i18n/server";
 import { autopsyLimits } from "@/lib/autopsy/config";
-import { GitHubError, validUsername } from "@/lib/github/client";
+import { GitHubError } from "@/lib/github/client";
+import { validUsername } from "@/lib/github/reference";
 import { discoverRepositories } from "@/lib/github/discovery";
+import { summarizeScan } from "@/lib/github/dead-score";
 import { clientKey, rateLimit } from "@/lib/security";
-import { UsernameForm } from "@/components/autopsy/username-form";
+import { EntryModes, type EntryMode } from "@/components/autopsy/entry-modes";
 import { RepositoryList } from "@/components/autopsy/repository-list";
 import ArchiveLoading from "@/components/ui/archive-loading";
 
@@ -13,19 +15,26 @@ export async function generateMetadata() {
   return pageMetadata(
     "/autopsy",
     "Repository Autopsy",
-    "Enter a GitHub username. Deadfolio finds the forgotten repositories and produces an evidence-based postmortem for the ones you choose.",
+    "Scan a public GitHub profile for forgotten projects, or paste a repository and run an evidence-based autopsy.",
   );
 }
 export const dynamic = "force-dynamic";
 
+const first = (value: string | string[] | undefined) =>
+  (Array.isArray(value) ? value[0] : value)?.trim() ?? "";
+
 export default async function AutopsyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ user?: string | string[] }>;
+  searchParams: Promise<{
+    user?: string | string[];
+    mode?: string | string[];
+  }>;
 }) {
   const t = await getTranslations();
-  const raw = (await searchParams).user;
-  const user = (Array.isArray(raw) ? raw[0] : raw)?.trim() ?? "";
+  const params = await searchParams;
+  const user = first(params.user);
+  const mode: EntryMode = first(params.mode) === "repo" && !user ? "repo" : "scan";
   return (
     <div className="shell page-space autopsy-page">
       <header className="page-heading autopsy-heading">
@@ -36,10 +45,10 @@ export default async function AutopsyPage({
         </h1>
         <p>
           {t(
-            "Enter a GitHub username. Deadfolio finds the repositories that stopped moving and, only when you ask, examines one and writes a skeptical, evidence-based postmortem.",
+            "Find the projects that stopped moving, then let one autopsy explain what happened, what survived and whether it deserves another shot.",
           )}
         </p>
-        <UsernameForm initial={user} />
+        <EntryModes initialMode={mode} initialUser={user} />
       </header>
       {user && (
         <Suspense fallback={<ArchiveLoading />}>
@@ -76,6 +85,7 @@ async function ScanResults({ user }: { user: string }) {
       <RepositoryList
         login={result.discovery.login}
         repositories={result.discovery.repositories}
+        summary={summarizeScan(result.discovery.repositories)}
         truncated={result.discovery.truncated}
         limit={autopsyLimits().maxRepositoriesPerScan}
       />
@@ -107,20 +117,20 @@ async function HowItWorks() {
   const t = await getTranslations();
   const steps: [string, string][] = [
     [
-      "Discover",
+      "Scan",
       "Up to 100 public repositories are scored from metadata alone: last push, age, archive status, forks. No AI involved.",
     ],
     [
-      "Examine",
+      "Autopsy",
       "Pick one. Deadfolio collects the README, manifests, tree, recent activity and a dozen architecture-defining files. Secrets and build output are never read.",
     ],
     [
-      "Report",
-      "One Gemini pass separates evidence from inference and admits what the repository cannot prove. The result is cached per commit for everyone.",
+      "Confirm",
+      "One Gemini pass separates evidence from inference and admits what the repository cannot prove. You confirm or correct the cause of death in one sentence.",
     ],
     [
-      "Correct and file",
-      "You confirm or correct the cause of death in one sentence, then add it to your Deadfolio. Editing is optional.",
+      "Preserve",
+      "Add the project to your Deadfolio. The report becomes the first draft of the postmortem; editing is optional.",
     ],
   ];
   return (

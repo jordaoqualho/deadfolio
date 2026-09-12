@@ -1,24 +1,24 @@
-import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { pageMetadata } from "@/lib/i18n/metadata";
 import { getLocale, getTranslations } from "@/lib/i18n/server";
 import { translate } from "@/lib/i18n/dictionaries";
-import { aiConfigured } from "@/lib/ai/extract-project";
-import {
-  GitHubError,
-  validRepositoryName,
-  validUsername,
-} from "@/lib/github/client";
+import { aiConfigured } from "@/lib/ai/config";
+import { GitHubError } from "@/lib/github/client";
+import { validRepositoryName, validUsername } from "@/lib/github/reference";
 import { getRepository as getGitHubRepository } from "@/lib/github/discovery";
-import { deadScore } from "@/lib/github/dead-score";
+import { calculateDeadScore } from "@/lib/github/dead-score";
 import { lookupAutopsy } from "@/lib/services/autopsy";
-import { formatDate } from "@/lib/autopsy/format";
+import { formatDate, formatSpan } from "@/lib/autopsy/format";
 import { LocalLink as Link } from "@/components/locale";
-import { VerdictBadge } from "@/components/autopsy/verdict-badge";
+import {
+  DeadScoreLabel,
+  VerdictBadge,
+} from "@/components/autopsy/verdict-badge";
 import { RunAutopsy } from "@/components/autopsy/run-autopsy";
 import type { AutopsyLookup, RepositoryFacts } from "@/types/autopsy";
 
 type Params = Promise<{ owner: string; repo: string }>;
+type Search = Promise<{ run?: string | string[] }>;
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { owner, repo } = await params;
@@ -31,45 +31,55 @@ export async function generateMetadata({ params }: { params: Params }) {
 }
 export const dynamic = "force-dynamic";
 
+/** Visitor-facing copy for GitHub failures. Provider messages never leak. */
+function githubProblem(error: unknown) {
+  const kind = error instanceof GitHubError ? error.kind : "unavailable";
+  switch (kind) {
+    case "not-found":
+      return "Repository not found. Check the owner and name, and make sure the repository is public.";
+    case "private":
+      return "This repository does not appear to be public.";
+    case "invalid":
+      return "That doesn’t look like a GitHub repository URL.";
+    case "empty":
+      return "This repository has no commits to examine.";
+    case "rate-limited":
+      return "GitHub is rate-limiting us right now. Try again shortly.";
+    default:
+      return "GitHub could not be reached. Try again shortly.";
+  }
+}
+
 export default async function RepositoryAutopsyPage({
   params,
+  searchParams,
 }: {
   params: Params;
+  searchParams: Search;
 }) {
   const { owner, repo } = await params;
-  if (!validUsername(owner) || !validRepositoryName(repo)) notFound();
+  const run = (await searchParams).run;
+  const autorun = (Array.isArray(run) ? run[0] : run) === "1";
   const t = await getTranslations();
   const locale = await getLocale();
 
+  if (!validUsername(owner) || !validRepositoryName(repo))
+    return <Problem message={t(githubProblem(new GitHubError("invalid", "")))} />;
+
   let facts: RepositoryFacts;
-  let lookup: AutopsyLookup | null = null;
-  let problem: GitHubError | null = null;
   try {
     facts = await getGitHubRepository(owner, repo);
   } catch (error) {
-    if (error instanceof GitHubError && error.kind === "not-found") notFound();
-    return (
-      <div className="shell page-space">
-        <Back owner={owner} />
-        <p className="notice" role="alert">
-          {t(
-            error instanceof GitHubError && error.kind === "rate-limited"
-              ? "GitHub is rate-limiting us right now. Try again shortly."
-              : "GitHub could not be reached. Try again shortly.",
-          )}
-        </p>
-      </div>
-    );
+    return <Problem message={t(githubProblem(error))} owner={owner} />;
   }
+  let lookup: AutopsyLookup | null = null;
+  let problem: string | null = null;
   try {
     lookup = await lookupAutopsy(facts);
   } catch (error) {
-    problem =
-      error instanceof GitHubError
-        ? error
-        : new GitHubError("unavailable", "Lookup failed.");
+    problem = githubProblem(error);
   }
-  const score = deadScore(facts);
+  const score = calculateDeadScore(facts);
   return (
     <div className="shell page-space repo-autopsy-page">
       <Back owner={facts.owner} />
@@ -82,7 +92,7 @@ export default async function RepositoryAutopsyPage({
             {facts.name}
             <span className="accent">.</span>
           </h1>
-          <VerdictBadge verdict={score.classification} score={score.score} />
+          <VerdictBadge verdict={score.classification} />
         </div>
         {facts.description && <p className="repo-head-description">{facts.description}</p>}
         <div className="repo-meta mono">
@@ -91,8 +101,9 @@ export default async function RepositoryAutopsyPage({
             {t("last push")} {formatDate(facts.pushedAt, locale)}
           </span>
           <span>
-            {t("created")} {formatDate(facts.createdAt, locale)}
+            {t("age")} {formatSpan(score.ageDays, locale)}
           </span>
+          <DeadScoreLabel score={score.score} />
           <a href={facts.htmlUrl} target="_blank" rel="noopener noreferrer nofollow">
             GitHub <ArrowUpRight size={13} />
           </a>
@@ -111,18 +122,32 @@ export default async function RepositoryAutopsyPage({
           repo={facts.name}
           lookup={lookup}
           aiEnabled={aiConfigured()}
+          autorun={autorun}
         />
       ) : (
         <p className="notice" role="alert">
-          {t(
-            problem?.kind === "empty"
-              ? "This repository has no commits to examine."
-              : problem?.kind === "rate-limited"
-                ? "GitHub is rate-limiting us right now. Try again shortly."
-                : "GitHub could not be reached. Try again shortly.",
-          )}
+          {t(problem ?? "GitHub could not be reached. Try again shortly.")}
         </p>
       )}
+    </div>
+  );
+}
+
+async function Problem({ message, owner }: { message: string; owner?: string }) {
+  const t = await getTranslations();
+  return (
+    <div className="shell page-space">
+      {owner ? (
+        <Back owner={owner} />
+      ) : (
+        <Link href="/autopsy?mode=repo" className="back-link">
+          <ArrowLeft size={16} />
+          {t("Back to the autopsy")}
+        </Link>
+      )}
+      <p className="notice" role="alert">
+        {message}
+      </p>
     </div>
   );
 }

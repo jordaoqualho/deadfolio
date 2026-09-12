@@ -1,51 +1,37 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LoaderCircle, Search } from "lucide-react";
 import { useLocale, useTranslations } from "@/components/locale";
 import { localePath } from "@/lib/i18n/dictionaries";
+import { parseUsername } from "@/lib/github/reference";
 import { trackEvent } from "@/components/analytics";
 
-const USERNAME = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
-
 /** Accepts a login or a profile URL and navigates to the server-rendered scan. */
-export function UsernameForm({
-  initial = "",
-  compact = false,
-}: {
-  initial?: string;
-  compact?: boolean;
-}) {
+export function UsernameForm({ initial = "" }: { initial?: string }) {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
   const [value, setValue] = useState(initial);
   const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [busy, startTransition] = useTransition();
   function onSubmit(event: FormEvent) {
     event.preventDefault();
-    const login = value
-      .trim()
-      .replace(/^https?:\/\/(www\.)?github\.com\//i, "")
-      .replace(/^@/, "")
-      .split(/[/?#]/)[0];
-    if (!USERNAME.test(login)) {
+    const login = parseUsername(value);
+    if (!login) {
       setError(t("Enter a valid GitHub username."));
       return;
     }
     setError("");
-    setBusy(true);
     trackEvent("Repository scan started");
-    router.push(
-      `${localePath(locale, "/autopsy")}?user=${encodeURIComponent(login)}`,
-    );
+    startTransition(() => {
+      router.push(
+        `${localePath(locale, "/autopsy")}?user=${encodeURIComponent(login)}`,
+      );
+    });
   }
   return (
-    <form
-      className={`username-form${compact ? " compact" : ""}`}
-      onSubmit={onSubmit}
-      role="search"
-    >
+    <form className="username-form" onSubmit={onSubmit} role="search">
       <label className="username-field">
         <span className="sr-only">{t("GitHub username")}</span>
         <Search size={18} aria-hidden="true" />
@@ -72,7 +58,7 @@ export function UsernameForm({
         ) : (
           <ArrowRight size={18} />
         )}
-        {t(busy ? "Scanning…" : "Find forgotten projects")}
+        {t(busy ? "Scanning…" : "Find my forgotten projects")}
       </button>
       {error && (
         <p className="form-error" role="alert">

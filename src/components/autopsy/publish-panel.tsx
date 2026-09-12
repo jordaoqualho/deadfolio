@@ -2,13 +2,13 @@
 import { useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Check, LoaderCircle } from "lucide-react";
 import { LocalLink, useLocale, useTranslations } from "@/components/locale";
-import { DraftPreview } from "@/components/submission/draft-preview";
 import { publishAutopsy } from "@/app/actions";
 import { trackEvent } from "@/components/analytics";
 import { nextSteps, projectDraftSchema } from "@/lib/schemas/project";
 import { autopsyToDraft } from "@/lib/autopsy/draft";
-import type { ProjectDraft, RawSubmission } from "@/types/project";
+import type { NextStep, ProjectDraft } from "@/types/project";
 import type { StoredAutopsy } from "@/types/autopsy";
+import { DraftEditor } from "./draft-editor";
 
 type Confirmation = "unanswered" | "agree" | "disagree";
 
@@ -21,12 +21,10 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<ProjectDraft | null>(null);
   const [creatorName, setCreatorName] = useState("");
-  const [email, setEmail] = useState("");
-  const [nextStep, setNextStep] =
-    useState<RawSubmission["nextStep"]>("let-it-rest");
+  const [nextStep, setNextStep] = useState<NextStep>("let-it-rest");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [published, setPublished] = useState<{ slug: string } | null>(null);
   const form = useRef<HTMLFormElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
 
@@ -61,7 +59,7 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
         });
         if (!parsed.success) {
           setError(
-            t("Some edited details are too long. Shorten them before submitting."),
+            t("Some edited details are too long. Shorten them before publishing."),
           );
           return;
         }
@@ -70,29 +68,29 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
       const result = await publishAutopsy({
         key: autopsy.key,
         creatorName,
-        email,
         nextStep,
         locale,
-        ...correction,
+        confirmation,
+        actualCause: correction.actualCause,
         draft: cleanDraft,
       });
-      if (!result.ok || !result.id) {
+      if (!result.ok || !result.slug) {
         setError(
           t(
             result.error === "rate-limit"
-              ? "Too many submissions. Please try again in an hour."
-              : "We couldn’t file this autopsy. Your details are still here. Please try again.",
+              ? "Too many publications from your connection. Please try again in an hour."
+              : "We couldn’t publish this autopsy. Your details are still here. Please try again.",
           ),
         );
         return;
       }
       trackEvent("Autopsy published");
-      setSuccess(result.id);
+      setPublished({ slug: result.slug });
       requestAnimationFrame(() => heading.current?.focus());
     } catch {
       setError(
         t(
-          "We couldn’t file this autopsy. Your details are still here. Please try again.",
+          "We couldn’t publish this autopsy. Your details are still here. Please try again.",
         ),
       );
     } finally {
@@ -100,27 +98,28 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
     }
   }
 
-  if (success)
+  if (published)
     return (
       <section className="publish-panel submission-success">
         <div className="success-icon">
           <Check size={30} />
         </div>
         <h2 ref={heading} tabIndex={-1}>
-          {t("Autopsy filed.")}
+          {t("Added to your Deadfolio.")}
         </h2>
         <p>
           {t(
-            "We’ll review it before it enters the public archive. The cause of death you confirmed is the one we keep.",
+            "The project is public in the Graveyard now. It is marked as filed by an unverified creator, because Deadfolio cannot yet prove who owns a repository.",
           )}
         </p>
-        <div className="submission-id">
-          <span>{t("Submission reference")}</span>
-          <code>{success}</code>
+        <div className="hero-buttons">
+          <LocalLink href={`/projects/${published.slug}`} className="button primary">
+            {t("Open the postmortem")} <ArrowRight size={18} />
+          </LocalLink>
+          <LocalLink href="/graveyard" className="button secondary">
+            {t("Back to the Graveyard")}
+          </LocalLink>
         </div>
-        <LocalLink href="/graveyard" className="button primary">
-          {t("Back to the Graveyard")}
-        </LocalLink>
       </section>
     );
 
@@ -154,7 +153,7 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
           </button>
         </div>
         {confirmation === "disagree" && (
-          <label className="field actual-cause">
+          <label className="field actual-cause creator-voice">
             <span>{t("What actually killed it?")}</span>
             <textarea
               rows={2}
@@ -163,7 +162,9 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
               placeholder={t("One or two sentences is plenty.")}
               onChange={(e) => setActualCause(e.target.value)}
             />
-            <small>{t("Your answer replaces the inferred cause everywhere it is shown.")}</small>
+            <small>
+              {t("Your answer replaces the inferred cause everywhere it is shown, and is labeled as the creator’s account.")}
+            </small>
           </label>
         )}
       </div>
@@ -186,53 +187,39 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
         </div>
       ) : (
         <form ref={form} className="publish-form" onSubmit={submit}>
-          <span className="eyebrow">{t("FILE THIS POSTMORTEM")}</span>
+          <span className="eyebrow">{t("PUBLISH TO THE GRAVEYARD")}</span>
           <fieldset disabled={busy} className="story-fields">
             <div className="field-grid">
               <label className="field">
-                <span>{t("Creator name")}</span>
+                <span>{t("Display name (optional)")}</span>
                 <input
                   name="creatorName"
-                  autoComplete="name"
-                  required
-                  minLength={2}
+                  autoComplete="nickname"
                   maxLength={100}
                   value={creatorName}
+                  placeholder={autopsy.repository.owner}
                   onChange={(e) => setCreatorName(e.target.value)}
                 />
               </label>
               <label className="field">
-                <span>{t("Creator email")}</span>
-                <input
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  maxLength={254}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+                <span>{t("What should happen to the project?")}</span>
+                <select
+                  value={nextStep}
+                  onChange={(e) => setNextStep(e.target.value as NextStep)}
+                >
+                  {Object.entries(nextSteps).map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {t(label)}
+                    </option>
+                  ))}
+                </select>
               </label>
             </div>
-            <label className="field">
-              <span>{t("What should happen to the project?")}</span>
-              <select
-                value={nextStep}
-                onChange={(e) =>
-                  setNextStep(e.target.value as RawSubmission["nextStep"])
-                }
-              >
-                {Object.entries(nextSteps).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {t(label)}
-                  </option>
-                ))}
-              </select>
-            </label>
           </fieldset>
           <p className="privacy-note">
-            {t("Your email stays private and is only used for moderation.")}{" "}
-            {t("ALL SUBMISSIONS ARE REVIEWED BEFORE PUBLISHING.")}
+            {t(
+              "Publishing is immediate and public. Deadfolio does not verify repository ownership yet, so the record is labeled as unverified.",
+            )}
           </p>
           {error && (
             <p className="form-error" role="alert">
@@ -242,7 +229,7 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
           <div className="hero-buttons">
             <button className="button primary" type="submit" disabled={busy}>
               {busy && <LoaderCircle size={18} className="spin" />}
-              {t(busy ? "Filing…" : "Publish")}
+              {t(busy ? "Publishing…" : "Publish")}
             </button>
             {!editing && (
               <button
@@ -257,20 +244,7 @@ export function PublishPanel({ autopsy }: { autopsy: StoredAutopsy }) {
           </div>
           {editing && draft && (
             <div className="publish-editor">
-              <DraftPreview
-                draft={draft}
-                onChange={setDraft}
-                disabled={busy}
-                input={{
-                  title: draft.title || autopsy.repository.name,
-                  story: "",
-                  url: autopsy.repository.htmlUrl,
-                  nextStep,
-                  creatorName: creatorName || "—",
-                  email,
-                  locale,
-                }}
-              />
+              <DraftEditor draft={draft} onChange={setDraft} disabled={busy} />
             </div>
           )}
         </form>

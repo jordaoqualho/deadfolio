@@ -45,6 +45,7 @@ export async function POST(request: Request) {
         return failure("github-rate-limited", 503, error.resetAt);
       if (error.kind === "not-found" || error.kind === "invalid")
         return failure("not-found", 404);
+      if (error.kind === "private") return failure("private", 403);
       if (error.kind === "empty") return failure("empty", 422);
       return failure("github-unavailable", 503);
     }

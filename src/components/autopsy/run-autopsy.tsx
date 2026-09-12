@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LoaderCircle, Microscope } from "lucide-react";
 import { useLocale, useTranslations } from "@/components/locale";
 import { trackEvent } from "@/components/analytics";
@@ -18,11 +18,14 @@ const ERROR_COPY: Record<string, string> = {
     "Our AI quota is exhausted for the moment. Nothing was lost; try again later.",
   transient: "The analysis didn’t complete. Try once more in a minute.",
   failed: "We couldn’t produce a reliable report for this repository.",
-  "ai-disabled": "Autopsies are not enabled on this deployment.",
+  "ai-disabled":
+    "Autopsies are not enabled on this deployment. Set GEMINI_API_KEY on the server to turn them on.",
   "github-rate-limited":
     "GitHub is rate-limiting us right now. Repository browsing still works; try the autopsy again shortly.",
   "github-unavailable": "GitHub could not be reached. Try again shortly.",
-  "not-found": "This repository is not publicly accessible.",
+  "not-found":
+    "Repository not found. Check the owner and name, and make sure the repository is public.",
+  private: "This repository does not appear to be public.",
   empty: "This repository has no commits to examine.",
   network: "The connection dropped before the report arrived. Try again.",
 };
@@ -32,11 +35,14 @@ export function RunAutopsy({
   repo,
   lookup,
   aiEnabled,
+  autorun = false,
 }: {
   owner: string;
   repo: string;
   lookup: AutopsyLookup;
   aiEnabled: boolean;
+  /** Direct-entry flow: start immediately instead of waiting for a click. */
+  autorun?: boolean;
 }) {
   const t = useTranslations();
   const locale = useLocale();
@@ -97,6 +103,15 @@ export function RunAutopsy({
     }
   }
 
+  const started = useRef(false);
+  useEffect(() => {
+    if (!autorun || started.current || autopsy || previous || !aiEnabled) return;
+    started.current = true;
+    void run();
+    // Intentionally runs once on mount for the direct-entry flow.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const shown = autopsy ?? previous;
   return (
     <>
@@ -105,7 +120,7 @@ export function RunAutopsy({
           {previous ? (
             <>
               <span className="eyebrow">{t("REPOSITORY CHANGED")}</span>
-              <h2>{t("New activity detected. Run a new autopsy?")}</h2>
+              <h2>{t("New activity detected since this autopsy.")}</h2>
               <p>
                 {t("The report below is from")}{" "}
                 <code className="mono">{previous.sha.slice(0, 7)}</code>{" "}
@@ -132,16 +147,16 @@ export function RunAutopsy({
               onClick={() => void run()}
             >
               {busy ? (
-                <LoaderCircle size={18} className="spin" />
+                <LoaderCircle size={18} className="spin" aria-hidden="true" />
               ) : (
-                <Microscope size={18} />
+                <Microscope size={18} aria-hidden="true" />
               )}
               {t(
                 busy
                   ? "Examining the repository…"
                   : previous
-                    ? "Run a new autopsy"
-                    : "🔬 Run Autopsy",
+                    ? "Run a fresh autopsy"
+                    : "Run Autopsy",
               )}
             </button>
           ) : (

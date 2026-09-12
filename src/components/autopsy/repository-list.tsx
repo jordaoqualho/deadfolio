@@ -1,19 +1,24 @@
 "use client";
-import { ArrowUpRight, GitFork, Star } from "lucide-react";
+import { ArrowUpRight, GitFork, Microscope, Star } from "lucide-react";
 import { LocalLink as Link, useLocale, useTranslations } from "@/components/locale";
 import { fill, formatDate, formatSpan, signalLabel } from "@/lib/autopsy/format";
+import { repositoryKinds } from "@/lib/schemas/autopsy";
 import { trackEvent } from "@/components/analytics";
 import type { DiscoveredRepository } from "@/types/autopsy";
-import { VerdictBadge } from "./verdict-badge";
+import type { ScanSummary as Summary } from "@/lib/github/dead-score";
+import { DeadScoreLabel, VerdictBadge } from "./verdict-badge";
+import { ScanSummary } from "./scan-summary";
 
 export function RepositoryList({
   login,
   repositories,
+  summary,
   truncated,
   limit,
 }: {
   login: string;
   repositories: DiscoveredRepository[];
+  summary: Summary;
   truncated: boolean;
   limit: number;
 }) {
@@ -58,6 +63,7 @@ export function RepositoryList({
           {t("Scores come from GitHub metadata, not AI.")}
         </p>
       </div>
+      <ScanSummary summary={summary} />
       {forgotten.length > 0 ? (
         <ul className="repo-list">
           {forgotten.map((repo) => (
@@ -99,13 +105,13 @@ export function RepositoryList({
 function RepositoryRow({ repo }: { repo: DiscoveredRepository }) {
   const t = useTranslations();
   const locale = useLocale();
-  const eligible = repo.deadScore.classification !== "active";
-  const signals = repo.deadScore.signals
-    .filter((s) => s.code !== "recent-push")
+  const score = repo.deadScore;
+  const signals = score.signals
+    .filter((s) => s.code !== "recent-push" && s.code !== "inactive")
     .slice(0, 3)
     .map((s) => {
       const { key, n } = signalLabel(s);
-      const spanCodes = ["inactive", "short-activity", "old"];
+      const spanCodes = ["short-activity", "old-and-abandoned"];
       return fill(
         t(key),
         n !== undefined && spanCodes.includes(s.code)
@@ -114,7 +120,7 @@ function RepositoryRow({ repo }: { repo: DiscoveredRepository }) {
       );
     });
   return (
-    <li className={`repo-row repo-${repo.deadScore.classification}`}>
+    <li className={`repo-row repo-${score.classification}`}>
       <div className="repo-main">
         <div className="repo-title">
           <a
@@ -126,10 +132,10 @@ function RepositoryRow({ repo }: { repo: DiscoveredRepository }) {
             {repo.name}
             <ArrowUpRight size={15} />
           </a>
-          <VerdictBadge
-            verdict={repo.deadScore.classification}
-            score={repo.deadScore.score}
-          />
+          <VerdictBadge verdict={score.classification} />
+          {score.kind !== "project" && (
+            <span className="repo-kind mono">{t(repositoryKinds[score.kind])}</span>
+          )}
         </div>
         {repo.description && <p className="repo-description">{repo.description}</p>}
         <div className="repo-meta mono">
@@ -144,25 +150,32 @@ function RepositoryRow({ repo }: { repo: DiscoveredRepository }) {
           )}
           <span>
             {t("last push")} {formatDate(repo.pushedAt, locale)}
+            {score.daysSincePush > 0 &&
+              ` (${fill(t("{n} ago"), formatSpan(score.daysSincePush, locale))})`}
+          </span>
+          <span>
+            {t("age")} {formatSpan(score.ageDays, locale)}
           </span>
         </div>
-        {signals.length > 0 && (
-          <ul className="repo-signals">
-            {signals.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-        )}
+        <div className="repo-score-row">
+          <DeadScoreLabel score={score.score} />
+          {signals.length > 0 && (
+            <ul className="repo-signals">
+              {signals.map((s) => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
-      {eligible && (
-        <Link
-          href={`/autopsy/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}`}
-          className="button secondary small autopsy-cta"
-          onClick={() => trackEvent("Autopsy opened")}
-        >
-          {t("🔬 Run Autopsy")}
-        </Link>
-      )}
+      <Link
+        href={`/autopsy/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.name)}`}
+        className={`button ${score.classification === "active" ? "secondary" : "primary"} small autopsy-cta`}
+        onClick={() => trackEvent("Autopsy opened")}
+      >
+        <Microscope size={16} aria-hidden="true" />
+        {t("Run Autopsy")}
+      </Link>
     </li>
   );
 }

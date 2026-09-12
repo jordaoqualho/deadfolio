@@ -1,25 +1,26 @@
 "use client";
 import { useTranslations } from "@/components/locale";
-import { repositoryVerdicts } from "@/lib/schemas/autopsy";
-import type { RepositoryVerdict } from "@/types/autopsy";
+import { lifeStatuses, type RepositoryLifeStatus } from "@/lib/schemas/autopsy";
 
-export function VerdictBadge({
-  verdict,
-  score,
-}: {
-  verdict: RepositoryVerdict;
-  score?: number;
-}) {
+export const DEAD_SCORE_HINT =
+  "Based on inactivity, repository age, archive status and recent development signals.";
+
+export function VerdictBadge({ verdict }: { verdict: RepositoryLifeStatus }) {
   const t = useTranslations();
   return (
     <span className={`verdict verdict-${verdict}`}>
       <i />
-      {t(repositoryVerdicts[verdict])}
-      {score !== undefined && (
-        <span className="verdict-score" aria-label={t("Dead score")}>
-          {score}
-        </span>
-      )}
+      {t(lifeStatuses[verdict])}
+    </span>
+  );
+}
+
+/** Always "N / 100", never a percentage: the score is a heuristic, not a probability. */
+export function DeadScoreLabel({ score }: { score: number }) {
+  const t = useTranslations();
+  return (
+    <span className="dead-score mono" title={t(DEAD_SCORE_HINT)}>
+      {t("Dead Score")}: <strong>{score}</strong> / 100
     </span>
   );
 }
