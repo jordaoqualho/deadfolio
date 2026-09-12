@@ -16,7 +16,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open http://localhost:3535. No service credentials are required. Manual submissions, moderation, image processing, and persistence all work locally. To moderate, set a random `ADMIN_PASSWORD` of at least 16 characters in `.env.local`, restart the server, and visit `/admin`.
+Open http://localhost:3535. No service credentials are required. Short raw-story submissions, moderation, image processing, and persistence all work locally. To moderate, set a random `ADMIN_PASSWORD` of at least 16 characters in `.env.local`, restart the server, and visit `/admin`.
 
 ```sh
 npm test
@@ -49,12 +49,11 @@ See `.env.example` for the complete starting configuration.
 
 - `PROJECT_REPOSITORY`: `local` for development or `blob` for Vercel. Defaults to local outside Vercel and Blob on Vercel. Filesystem mode fails closed on Vercel rather than silently losing submissions.
 - `LOCAL_DATA_DIR`: local storage directory, default `.data`.
-- `SEED_DEMOS`: `true` seeds the filesystem repository on its first initialization. `false` starts empty. It does not remove existing records. Blob is seeded explicitly, below.
+- `SEED_DEMOS`: enables sample records on the first local development initialization. Production never auto-seeds and filters all `isDemo` records from public pages and media, even if they already exist. It does not delete stored samples.
 - `BLOB_READ_WRITE_TOKEN`: optional static token for a **private** Vercel Blob store. On Vercel, connecting the store is enough: the SDK uses `BLOB_STORE_ID` with OIDC. The token is still needed to seed from your machine.
 - `ADMIN_PASSWORD`: random server-side secret, minimum 16 characters. Empty or short values disable administration. Rotating it invalidates existing sessions.
 - `NEXT_PUBLIC_APP_URL`: canonical origin, without a trailing slash; use the real HTTPS domain in production.
-- `AI_ENABLED`: defaults to `false`. Set `true` only to opt into AI provider usage.
-- `GEMINI_API_KEY`: server-only Google Gemini API key. Both this key and `AI_ENABLED=true` are required.
+- `GEMINI_API_KEY`: optional server-only Google Gemini API key. Its presence enables the formatting CTA. The former `AI_ENABLED` flag is no longer used.
 - `NEXT_PUBLIC_ANALYTICS_ENABLED`: defaults to `false`. Set `true` only after opting into Vercel Web Analytics. It is a build-time public flag; rebuild after changing it.
 
 Never commit `.env.local` or credentials. No infrastructure is provisioned by the application.
@@ -71,8 +70,8 @@ Stored JSON includes the private creator email. Public reads use an explicit Zod
 2. Create a **private** Blob store in the Vercel project and connect it to Production and Preview. The dashboard should add `BLOB_STORE_ID`. A public store is unsuitable because submitted records include private email addresses. Redeploy after connecting.
 3. Set `PROJECT_REPOSITORY=blob`, a strong `ADMIN_PASSWORD`, and `NEXT_PUBLIC_APP_URL=https://your-domain`. Leave AI and analytics disabled unless you explicitly want them.
 4. Deploy. No migrations or separate backend are required.
-5. To add the two example records to the Blob store, put its environment values in your local `.env.local` and run `npm run seed`. This explicitly writes demo records to the selected repository. Existing records with the same IDs are preserved. Deployments do not silently create or restore seeds.
-6. Visit `/admin` to verify the archive and delete or replace sample records before promoting it publicly.
+5. Visit `/admin/new` and add at least two genuine founder projects. Save each, review it, and publish explicitly from `/admin`. Do not relabel fictional sample content as real.
+6. Check the launch-readiness notice in `/admin`: it highlights an empty real archive and counts published founder projects against the minimum of two. Launch only after those records are ready.
 
 Storage layout: `deadfolio/projects/<id>.json` and `deadfolio/media/<id>/<random-id>.webp`. Moderation status lives inside each JSON record. Blob reads bypass the CDN cache for moderation correctness. Media responses are authorized against the current record and are not publicly cached, so rejecting a project also withdraws its images.
 
@@ -80,9 +79,9 @@ Use the available free tier, review the provider's current quotas, and set usage
 
 ## Optional Gemini formatting
 
-Create a Gemini API key in Google AI Studio. Set `GEMINI_API_KEY` and `AI_ENABLED=true`, then restart/redeploy. The server uses `gemini-2.5-flash-lite` with AI SDK `generateText`, `Output.object`, and Zod validation. Structured extraction is instructed not to invent metrics, technologies, dates, development time, failure reasons or personal information. Unknown facts remain blank. The user must review and complete the draft before submitting, and moderation still applies.
+Create a Gemini API key in Google AI Studio. Set `GEMINI_API_KEY`, then restart/redeploy. The server uses `gemini-2.5-flash-lite` with AI SDK `generateText`, `Output.object`, and Zod validation. Structured extraction is instructed not to invent metrics, technologies, dates, development time, failure reasons or personal information. Unknown facts remain blank. The visitor reviews an editable preview; missing generated details may stay blank. The moderator completes required public fields before publishing.
 
-The form explains that text is sent to Google. Never paste credentials or confidential material. With no key, the assistant is visibly offline and manual entry remains available. If extraction fails or times out, the original story remains in the form and **Continue manually** opens the editor. The prompt reduces unsupported generation but cannot guarantee factual accuracy; human review remains essential.
+The form explains that text is sent to Google. Never paste credentials or confidential material. With no key, the form silently offers **Submit my story**. If extraction fails or times out, all six inputs remain in the form and the same direct-submission CTA appears. Visitors never enter the long structured editor; it is reserved for moderation. The prompt reduces unsupported generation but cannot guarantee factual accuracy; human review remains essential.
 
 The endpoint limits input to 15,000 characters, output to 5,000 tokens, uses no automatic retries, times out after 45 seconds, and has simple per-process per-client/global request limits. Those limits are best-effort on serverless deployments, not a distributed quota or spending guarantee. Set provider-level quotas before opting in.
 
@@ -98,7 +97,7 @@ Uploads accept JPEG, PNG and WebP only. The browser resizes/compresses files, th
 
 ## Seed content
 
-Both seeds are marked **SAMPLE PROJECT** and excluded from homepage social-proof counts.
+Both seeds are marked **SAMPLE PROJECT**, excluded from homepage counts, and hidden entirely from the production public archive. They remain editable in admin for demonstration purposes. `npm run seed` only adds these clearly labeled samples and never overwrites existing records.
 
 - **Fintal** contains only the product facts supplied in the specification. Unknown technologies, dates, hours and lessons are blank.
 - **Tabula** is explicitly fictional demo content illustrating a fuller postmortem.
@@ -120,6 +119,16 @@ Optional Vercel Web Analytics tracks homepage visits, project views, bury clicks
 - No automated email, messaging, offers, payments or marketplace workflow. Interest opens the explicitly supplied public contact link.
 - Real Blob/Gemini requests require configured credentials. Local automated tests do not incur provider usage.
 
-The future MCP entry point can call the same `ProjectSubmission` schema and `submitProject(input, repository)` service. No MCP server is implemented in this MVP.
+
 
 Implementation references: [Next.js App Router](https://nextjs.org/docs/app), [Vercel Blob SDK](https://vercel.com/docs/vercel-blob/using-blob-sdk), [AI SDK structured output](https://ai-sdk.dev/docs/ai-sdk-core/generating-structured-data), [Google provider](https://ai-sdk.dev/providers/ai-sdk-providers/google-generative-ai).
+
+## First-launch submission flow and languages
+
+English is the default at `/`; Brazilian Portuguese is at `/pt`. All public routes have a `/pt` equivalent, including project pages, About and submission. On the first visit, `src/proxy.ts` reads the browser `Accept-Language` header (the standard signal for OS/browser language preferences) and redirects Portuguese users to `/pt` without storing any personal data. A `deadfolio-locale` cookie remembers manual choices from the header language switcher. The switcher lives in the main navigation and uses a full document navigation so `<html lang>` and server copy stay consistent. Typed dictionaries live in `src/lib/i18n/dictionaries.ts`. Visitor stories and project facts stay in their original language; AI formats into the selected locale. Canonicals, language alternatives and sitemap entries cover both locales.
+
+The submission form collects project name, raw story (50–15,000 characters), an optional URL/GitHub, one next-step choice, creator name and private email. It always accepts direct stories; Gemini is optional. Only project name and story are sent to Gemini, never the creator email or identity fields. The original text remains in memory after request failures and is stored privately with successful submissions.
+
+Records have `submissionType: raw | structured`, private `rawStory` and `locale`, and an `isFounder` flag. Older records load as structured. Incomplete AI drafts are accepted as pending structured records. Public projection strips private story, email and submission metadata. Raw records cannot publish, even through a direct admin action. The moderator opens their original story in the existing editor, completes the public record and saves; this explicitly converts them to structured while keeping the original story private. Publication validates the full schema again. Unknown metrics remain null.
+
+`/admin/new` creates genuine founder records, protected by the existing admin session. Visitors cannot set the founder flag. Nothing auto-publishes. No real founder facts are bundled into this patch: supply and approve at least two before the first launch. If none exist, the admin shows a prominent launch blocker rather than creating fake projects.
