@@ -1,56 +1,60 @@
 "use client";
-import Link from "next/link";
+import { LocalLink as Link } from "@/components/locale";
+import { LanguageSwitcher, useTranslations } from "@/components/locale";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/deadfolio/logo";
 import { trackEvent } from "./analytics";
 export function BuryLink({
-  children = "Bury a Project",
+  children,
   className = "button primary",
 }: {
   children?: React.ReactNode;
   className?: string;
 }) {
+  const t = useTranslations();
   return (
     <Link
       href="/bury"
       className={className}
       onClick={() => trackEvent("Bury project clicked")}
     >
-      {children}
+      {children ?? t("Bury a Project")}
       <ArrowUpRight size={18} />
     </Link>
   );
 }
 export function Navigation() {
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname().replace(/^\/pt(?=\/|$)/, "") || "/";
   return (
     <header className="site-header">
       <div className="nav-wrap">
-        <Link href="/" aria-label="Deadfolio home" className="logo">
+        <Link href="/" aria-label={t("Deadfolio home")} className="logo">
           <Logo />
         </Link>
-        <nav className="desktop-nav" aria-label="Main navigation">
+        <nav className="desktop-nav" aria-label={t("Main navigation")}>
           <Link
             href="/graveyard"
             aria-current={pathname === "/graveyard" ? "page" : undefined}
           >
-            Graveyard
+            {t("Graveyard")}{" "}
           </Link>
           <Link
             href="/about"
             aria-current={pathname === "/about" ? "page" : undefined}
           >
-            About
+            {t("About")}{" "}
           </Link>
+          <LanguageSwitcher className="desktop-language-switcher" />
         </nav>
         <div className="nav-actions">
           <BuryLink />
           <button
             className="icon-button mobile-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={t(open ? "Close menu" : "Open menu")}
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen(!open)}
@@ -63,14 +67,15 @@ export function Navigation() {
         <nav
           id="mobile-nav"
           className="mobile-nav"
-          aria-label="Mobile navigation"
+          aria-label={t("Mobile navigation")}
         >
           <Link href="/graveyard" onClick={() => setOpen(false)}>
-            Graveyard
+            {t("Graveyard")}{" "}
           </Link>
           <Link href="/about" onClick={() => setOpen(false)}>
-            About
+            {t("About")}{" "}
           </Link>
+          <LanguageSwitcher className="mobile-language-switcher" />
         </nav>
       )}
     </header>
