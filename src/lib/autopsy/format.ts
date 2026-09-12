@@ -32,17 +32,21 @@ export function signalLabel(signal: DeadSignal): { key: string; n?: string } {
       return { key: "Disabled by GitHub" };
     case "fork":
       return { key: "Fork of another repository" };
+    case "template":
+      return { key: "Looks like a template or example" };
     case "empty":
       return { key: "Empty repository" };
     case "inactive":
       return { key: "No pushes for {n}", n: String(signal.value ?? 0) };
     case "recent-push":
       return { key: "Pushed recently" };
+    case "recently-created":
+      return { key: "Created recently" };
     case "short-activity":
       return (signal.value ?? 0) < 1
         ? { key: "All commits on a single day" }
         : { key: "Active for only {n}", n: String(signal.value) };
-    case "old":
+    case "old-and-abandoned":
       return { key: "Created {n} ago", n: String(signal.value ?? 0) };
     case "open-issues":
       return signal.value === 1

@@ -1,10 +1,10 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { AUTOPSY_MODEL, autopsyLimits } from "@/lib/autopsy/config";
-import { aiConfigured } from "@/lib/ai/extract-project";
+import { autopsyLimits, autopsyModel } from "@/lib/autopsy/config";
+import { aiConfigured } from "@/lib/ai/config";
 import { AutopsyGenerationError, generateAutopsy } from "@/lib/ai/autopsy";
 import { collectRepositoryContext } from "@/lib/github/collect";
-import { deadScore } from "@/lib/github/dead-score";
+import { calculateDeadScore } from "@/lib/github/dead-score";
 import {
   getDefaultBranchSha,
   getRepository as getGitHubRepository,
@@ -36,8 +36,10 @@ export class AutopsyServiceError extends Error {
   }
 }
 
-const AUTOPSIES = "autopsies";
-const LATEST = "autopsy-latest";
+// Namespaces carry a version: the report schema changed, and old records must
+// simply miss rather than fail validation.
+const AUTOPSIES = "autopsies-v2";
+const LATEST = "autopsy-latest-v2";
 const QUOTA = "autopsy-quota";
 const GLOBAL_PER_HOUR = 40;
 
@@ -77,7 +79,7 @@ const running = new Map<string, number>();
 function quotaKey(client: string) {
   // Daily, salted hash: enough to count, not enough to keep an address book.
   const day = new Date().toISOString().slice(0, 10);
-  const salt = process.env.ADMIN_PASSWORD || "deadfolio";
+  const salt = process.env.AUTOPSY_QUOTA_SALT || "deadfolio";
   return `${day}:${createHash("sha256").update(`${salt}:${day}:${client}`).digest("hex").slice(0, 32)}`;
 }
 
@@ -125,7 +127,7 @@ export async function runAutopsy(input: {
       await store.set(QUOTA, quota, { count: used });
       return { autopsy: raced, cached: true };
     }
-    const score = deadScore(facts);
+    const score = calculateDeadScore(facts);
     const context = await collectRepositoryContext(facts, sha, score);
     const generated = await generateAutopsy(context, input.locale);
     const autopsy = storedAutopsySchema.parse({
@@ -135,7 +137,7 @@ export async function runAutopsy(input: {
       sha,
       defaultBranch: facts.defaultBranch,
       locale: input.locale,
-      model: AUTOPSY_MODEL,
+      model: autopsyModel(),
       createdAt: new Date().toISOString(),
       repository: facts,
       deadScore: score,

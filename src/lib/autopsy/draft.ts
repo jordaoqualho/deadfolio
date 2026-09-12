@@ -65,11 +65,7 @@ export function autopsyToDraft(
     stage: report.stage,
     primaryCauseOfDeath: corrected ? "other" : (top?.category ?? null),
     causeExplanation: clip(causeExplanation, 6000),
-    // Publication needs 20+ characters here; a terse idea verdict falls back to the summary.
-    originalIdea:
-      report.ideaAssessment.explanation.length >= 20
-        ? report.ideaAssessment.explanation
-        : report.projectSummary || null,
+    originalIdea: report.productAssessment.explanation || report.projectSummary || null,
     whatWasBuilt: report.whatWasBuilt.map((s) => clip(s, 1500)),
     whatWentWrong: report.weaknesses.map((s) => clip(s, 1500)),
     whatWorked: report.strengths.map((s) => clip(s, 1500)),

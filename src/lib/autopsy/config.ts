@@ -20,7 +20,17 @@ export function autopsyLimits() {
   };
 }
 
-export const AUTOPSY_MODEL = "gemini-2.5-flash";
+export const DEFAULT_AUTOPSY_MODEL = "gemini-2.5-flash";
+
+/**
+ * Gemini model id. Google retires model ids for new API keys over time
+ * (`gemini-2.5-flash` already answers 404 for keys created recently), so the
+ * id can be overridden without a code change.
+ */
+export function autopsyModel() {
+  const raw = process.env.GEMINI_MODEL?.trim();
+  return raw && /^[a-z0-9.-]+$/i.test(raw) ? raw : DEFAULT_AUTOPSY_MODEL;
+}
 
 /** Rough, provider-agnostic estimate used to keep prompts inside the input budget. */
 export function estimateTokens(text: string) {
