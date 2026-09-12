@@ -61,7 +61,7 @@ async function main() {
   ) {
     const body = await encodeReply(args);
     const response = await fetch(
-      `${origin}/${name === "saveSubmission" ? "bury" : "admin"}`,
+      `${origin}/${name === "saveSubmission" || name === "saveStory" ? "bury" : "admin"}`,
       {
         method: "POST",
         headers: {
@@ -109,13 +109,14 @@ async function main() {
       "/graveyard",
       "/about",
       "/bury",
-      "/projects/fintal",
-      "/projects/tabula",
+      "/pt",
+      "/pt/graveyard",
+      "/pt/about",
+      "/pt/bury",
       "/admin",
       "/sitemap.xml",
       "/robots.txt",
       "/opengraph-image",
-      "/projects/fintal/opengraph-image",
     ]) {
       const response = await fetch(origin + route);
       assert.equal(response.status, 200, route);
@@ -124,7 +125,50 @@ async function main() {
     }
     console.log("PASS: public pages, sitemap, robots and OG images render.");
     const bury = await (await fetch(origin + "/bury")).text();
-    assert.match(bury, /autopsy assistant is offline/);
+    assert.match(bury, /Submit my story/);
+    assert.ok(!bury.includes("assistant is offline"));
+    assert.ok(!bury.includes("I’d rather fill it out manually"));
+    for (const [route, copy] of [
+      ["/pt", "Projetos bons também morrem."],
+      ["/pt/bury", "Conta pra gente o que aconteceu."],
+      ["/pt/about", "POR QUE ESTAMOS AQUI"],
+    ]) {
+      const html = await (await fetch(origin + route)).text();
+      assert.match(html, /<html[^>]*lang="pt-BR"/);
+      assert.ok(html.includes(copy), route);
+      assert.ok(html.includes(`href="${route}"`), "Localized canonical");
+    }
+    assert.equal((await fetch(origin + "/projects/tabula")).status, 404);
+    console.log(
+      "PASS: both locales render; production does not invent or expose demo projects.",
+    );
+    const raw = {
+      title: "Unformatted story",
+      story:
+        "PRIVATE-RAW-STORY: We built a small tool for organizing drafts and stopped when our workflow changed.",
+      url: "https://example.test/project",
+      nextStep: "adoption",
+      creatorName: "Raw Maker",
+      email: "raw-private@example.test",
+      locale: "pt",
+    };
+    const rawSaved = await action("saveStory", [
+      { ...raw, moderationStatus: "published", isDemo: true },
+    ]);
+    assert.equal(rawSaved.result?.ok, true, rawSaved.text);
+    const rawId = rawSaved.result.id;
+    const rawRecord = JSON.parse(
+      await readFile(path.join(directory, "projects", `${rawId}.json`), "utf8"),
+    );
+    assert.equal(rawRecord.submissionType, "raw");
+    assert.equal(rawRecord.rawStory, raw.story);
+    assert.equal(rawRecord.locale, "pt");
+    assert.equal(rawRecord.moderationStatus, "submitted");
+    assert.equal(
+      (await fetch(origin + `/pt/projects/${rawRecord.slug}`)).status,
+      404,
+    );
+
     const offline = await fetch(origin + "/api/ai/project-draft", {
       method: "POST",
       headers: { Origin: origin, "Content-Type": "application/json" },
@@ -206,6 +250,52 @@ async function main() {
     assert.match(setCookie, /Secure/i);
     cookie = setCookie.split(";")[0];
     assert.ok(cookie.startsWith("deadfolio-admin="));
+    const dashboard = await (
+      await fetch(origin + "/admin", { headers: { Cookie: cookie } })
+    ).text();
+    assert.match(dashboard, /Not ready to launch/);
+    assert.match(
+      dashboard.replace(/<!--.*?-->/g, ""),
+      /0\/2 founder projects published/,
+    );
+    assert.equal(
+      (await action("moderateProject", [rawId, "publish"], true)).result?.ok,
+      false,
+    );
+    const rawEdit = await (
+      await fetch(origin + `/admin/${rawId}/edit`, {
+        headers: { Cookie: cookie },
+      })
+    ).text();
+    assert.ok(rawEdit.includes(raw.story));
+    const converted = new FormData();
+    converted.set(
+      "project",
+      JSON.stringify({
+        ...input,
+        title: raw.title,
+        email: raw.email,
+        creator: { ...input.creator, name: raw.creatorName },
+      }),
+    );
+    assert.equal(
+      (await action("saveSubmission", [converted, rawId], true)).result?.ok,
+      true,
+    );
+    assert.equal(
+      (await action("moderateProject", [rawId, "publish"], true)).result?.ok,
+      true,
+    );
+    const publicRaw = await (
+      await fetch(origin + `/pt/projects/${rawRecord.slug}`)
+    ).text();
+    assert.ok(publicRaw.includes(raw.title));
+    assert.ok(!publicRaw.includes(raw.email));
+    assert.ok(!publicRaw.includes("PRIVATE-RAW-STORY"));
+    console.log(
+      "PASS: raw stories persist privately, cannot be published, and become publishable only after moderator completion.",
+    );
+
     assert.equal(
       (await fetch(origin + `/admin/${id}`, { headers: { Cookie: cookie } }))
         .status,
@@ -283,6 +373,42 @@ async function main() {
     );
     await assert.rejects(() =>
       readFile(path.join(directory, "projects", `${id}.json`)),
+    );
+    const founderForm = new FormData();
+    founderForm.set("project", JSON.stringify(input));
+    founderForm.set("founder", "true");
+    assert.equal(
+      (await action("saveSubmission", [founderForm])).result?.ok,
+      false,
+    );
+    for (const title of ["Founder project one", "Founder project two"]) {
+      founderForm.set("project", JSON.stringify({ ...input, title }));
+      const founder = await action("saveSubmission", [founderForm], true);
+      assert.equal(founder.result?.ok, true, founder.text);
+      const founderRecord = JSON.parse(
+        await readFile(
+          path.join(directory, "projects", `${founder.result.id}.json`),
+          "utf8",
+        ),
+      );
+      assert.equal(founderRecord.isFounder, true);
+      assert.equal(founderRecord.isDemo, false);
+      assert.equal(founderRecord.moderationStatus, "submitted");
+      assert.equal(
+        (await action("moderateProject", [founder.result.id, "publish"], true))
+          .result?.ok,
+        true,
+      );
+    }
+    const readyDashboard = await (
+      await fetch(origin + "/admin", { headers: { Cookie: cookie } })
+    ).text();
+    assert.match(
+      readyDashboard.replace(/<!--.*?-->/g, ""),
+      /2\/2 founder projects published/,
+    );
+    console.log(
+      "PASS: only the admin can add founder projects; both require explicit publication and count toward launch readiness.",
     );
     await action("logoutAdmin", [], true);
     console.log(
