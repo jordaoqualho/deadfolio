@@ -25,5 +25,5 @@ test("locale cookie and prefix helpers stay stable", () => {
   assert.equal(localePrefixPath("/", "pt"), "/pt");
   assert.equal(localePrefixPath("/graveyard", "pt"), "/pt/graveyard");
   assert.equal(localePrefixPath("/pt/about", "en"), "/about");
-  assert.equal(localePrefixPath("/admin/new", "pt"), "/admin/new");
+  assert.equal(localePrefixPath("/api/autopsy", "pt"), "/api/autopsy");
 });
