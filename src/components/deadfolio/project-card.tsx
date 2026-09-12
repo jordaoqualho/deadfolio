@@ -1,4 +1,6 @@
-import Link from "next/link";
+"use client";
+import { LocalLink as Link } from "@/components/locale";
+import { useTranslations } from "@/components/locale";
 import { ArrowUpRight, ArrowRight, Plus } from "lucide-react";
 import type { Project } from "@/types/project";
 import { Reveal } from "@/components/ui/reveal";
@@ -16,19 +18,20 @@ export function ProjectCard({
   project: Project;
   index?: number;
 }) {
+  const t = useTranslations();
   return (
     <article className="project-card">
       <Link
         href={`/projects/${p.slug}`}
         className={`card-cover cover-${index % 2}`}
-        aria-label={`Read ${p.title}'s autopsy`}
+        aria-label={`${t("Read project postmortem")}: ${p.title}`}
       >
         {p.coverImage ? (
           <img src={p.coverImage.url} alt={p.coverImage.alt} loading="lazy" />
         ) : (
           <>
             <span className="mono record-code">
-              PROJECT ARCHIVE / {String(index + 1).padStart(3, "0")}
+              {t("PROJECT ARCHIVE /")} {String(index + 1).padStart(3, "0")}
             </span>
             <span className="cover-title">
               {p.title}
@@ -36,28 +39,28 @@ export function ProjectCard({
             </span>
             <Plus className="cover-plus" size={40} strokeWidth={1} />
             <span className="cover-caption mono">
-              {stages[p.stage]}
+              {t(stages[p.stage])}
               <ArrowUpRight size={18} />
             </span>
           </>
         )}
-        {p.isDemo && <span className="demo-label">SAMPLE PROJECT</span>}
+        {p.isDemo && <span className="demo-label">{t("SAMPLE PROJECT")}</span>}
       </Link>
       <div className="card-body">
         <div className="card-meta">
           <span className={`status status-${p.status}`}>
             <i />
-            {statuses[p.status]}
+            {t(statuses[p.status])}
           </span>
-          <span>{categories[p.category]}</span>
+          <span>{t(categories[p.category])}</span>
         </div>
         <h3>
           <Link href={`/projects/${p.slug}`}>{p.title}</Link>
         </h3>
         <p className="card-tagline">{p.tagline}</p>
         <div className="card-cause">
-          <span className="eyebrow">Cause of death</span>
-          <strong>{causes[p.primaryCauseOfDeath]}</strong>
+          <span className="eyebrow">{t("Cause of death")}</span>
+          <strong>{t(causes[p.primaryCauseOfDeath])}</strong>
         </div>
         <div className="tags">
           {p.developmentDuration && <span>{p.developmentDuration}</span>}
@@ -66,9 +69,9 @@ export function ProjectCard({
           ))}
         </div>
         <div className="card-bottom">
-          <span>{nextSteps[p.desiredNextSteps[0]]}</span>
+          <span>{t(nextSteps[p.desiredNextSteps[0]])}</span>
           <Link href={`/projects/${p.slug}`}>
-            Read the autopsy <ArrowRight size={17} />
+            {t("Read the autopsy")} <ArrowRight size={17} />
           </Link>
         </div>
       </div>
@@ -76,6 +79,7 @@ export function ProjectCard({
   );
 }
 export function ProjectGrid({ projects }: { projects: Project[] }) {
+  const t = useTranslations();
   return projects.length ? (
     <div className="project-grid">
       {projects.map((p, i) => (
@@ -87,10 +91,10 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
   ) : (
     <div className="empty-state">
       <Plus size={30} />
-      <h3>Nothing buried here yet.</h3>
-      <p>Every archive starts with a story. Yours could be the first.</p>
+      <h3>{t("Nothing buried here yet.")}</h3>
+      <p>{t("Every archive starts with a story. Yours could be the first.")}</p>
       <Link href="/bury" className="text-link">
-        Bury a Project <ArrowRight size={18} />
+        {t("Bury a Project")} <ArrowRight size={18} />
       </Link>
     </div>
   );

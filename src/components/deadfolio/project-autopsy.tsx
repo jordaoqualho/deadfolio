@@ -1,4 +1,6 @@
+"use client";
 import type { Project } from "@/types/project";
+import { useTranslations } from "@/components/locale";
 import {
   statuses,
   categories,
@@ -7,36 +9,45 @@ import {
   nextSteps,
 } from "@/lib/schemas/project";
 import { ArrowUpRight, ArrowLeft, Plus } from "lucide-react";
-import Link from "next/link";
+import { LocalLink as Link } from "@/components/locale";
 import { InterestButton } from "./interest-button";
 export function ProjectAutopsy({
   project: p,
   preview = false,
+  submissionPreview = false,
 }: {
   project: Project;
   preview?: boolean;
+  submissionPreview?: boolean;
 }) {
+  const t = useTranslations();
   return (
     <article className="shell autopsy page-space">
-      <Link href={preview ? "/admin" : "/graveyard"} className="back-link">
-        <ArrowLeft size={16} />
-        {preview ? "Back to moderation" : "Back to the Graveyard"}
-      </Link>
+      {!submissionPreview && (
+        <Link href={preview ? "/admin" : "/graveyard"} className="back-link">
+          <ArrowLeft size={16} />
+          {t(preview ? "Back to moderation" : "Back to the Graveyard")}
+        </Link>
+      )}
       {p.isDemo && (
         <div className="notice">
-          Sample project ·{" "}
-          {p.slug === "fintal"
-            ? "Based on the supplied Fintal description. Unknown details are left blank."
-            : "Fictional demo content, created to show how a postmortem works."}
+          {t("Sample project ·")}{" "}
+          {t(
+            p.slug === "fintal"
+              ? "Based on the supplied Fintal description. Unknown details are left blank."
+              : "Fictional demo content, created to show how a postmortem works.",
+          )}
         </div>
       )}
       {preview && (
         <div className="notice">
-          Private moderation preview · {p.moderationStatus}
+          {t("Private moderation preview ·")} {p.moderationStatus}
         </div>
       )}
       <header className="autopsy-header">
-        <div className="eyebrow">PROJECT POSTMORTEM / {p.id.slice(0, 12)}</div>
+        <div className="eyebrow">
+          {t("PROJECT POSTMORTEM /")} {p.id.slice(0, 12)}
+        </div>
         <h1>
           {p.title}
           <span className="accent">.</span>
@@ -44,11 +55,11 @@ export function ProjectAutopsy({
         <p className="autopsy-tagline">{p.tagline}</p>
         <div className="autopsy-byline">
           <span>
-            Filed by <strong>{p.creator.name}</strong>
+            {t("Filed by")} <strong>{p.creator.name}</strong>
           </span>
           <span className={`status status-${p.status}`}>
             <i />
-            {statuses[p.status]}
+            {t(statuses[p.status])}
           </span>
         </div>
       </header>
@@ -61,7 +72,7 @@ export function ProjectAutopsy({
       )}
       <div className="autopsy-layout">
         <aside className="project-facts">
-          <span className="eyebrow">THE RECORD</span>
+          <span className="eyebrow">{t("THE RECORD")}</span>
           <dl>
             {[
               ["Category", categories[p.category]],
@@ -71,21 +82,21 @@ export function ProjectAutopsy({
               [
                 "Estimated time invested",
                 p.estimatedHours !== null
-                  ? `${p.estimatedHours.toLocaleString("en-US")} hours`
+                  ? `${p.estimatedHours.toLocaleString()} ${t("hours")}`
                   : "",
               ],
             ]
               .filter(([, v]) => v)
               .map(([k, v]) => (
                 <div key={k}>
-                  <dt>{k}</dt>
-                  <dd>{v}</dd>
+                  <dt>{t(k)}</dt>
+                  <dd>{t(v)}</dd>
                 </div>
               ))}
           </dl>
           {p.technologies.length > 0 && (
             <>
-              <h2 className="eyebrow">TECHNOLOGY</h2>
+              <h2 className="eyebrow">{t("TECHNOLOGY")}</h2>
               <div className="tags">
                 {p.technologies.map((t) => (
                   <span key={t}>{t}</span>
@@ -104,12 +115,12 @@ export function ProjectAutopsy({
               .filter(([, url]) => url)
               .map(([label, url]) => (
                 <a
-                  key={label}
+                  key={t(label)}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
                 >
-                  {label}
+                  {t(label)}
                   <ArrowUpRight size={15} />
                 </a>
               ))}
@@ -117,18 +128,18 @@ export function ProjectAutopsy({
         </aside>
         <div className="autopsy-story">
           <section>
-            <span className="section-number">01 / THE BEGINNING</span>
-            <h2>The Idea</h2>
+            <span className="section-number">{t("01 / THE BEGINNING")}</span>
+            <h2>{t("The Idea")}</h2>
             {p.summary && <p className="lead">{p.summary}</p>}
             <p>{p.originalIdea}</p>
             {p.whyBuilt && <p>{p.whyBuilt}</p>}
           </section>
           <section>
-            <span className="section-number">02 / THE WORK</span>
-            <h2>What Was Built</h2>
+            <span className="section-number">{t("02 / THE WORK")}</span>
+            <h2>{t("What Was Built")}</h2>
             <ContentList
               items={p.whatWasBuilt}
-              empty="The creator hasn’t documented the build yet."
+              empty={t("The creator hasn’t documented the build yet.")}
             />
             {p.screenshots.length > 0 && (
               <div className="screenshots">
@@ -145,58 +156,60 @@ export function ProjectAutopsy({
           </section>
           <section className="cause-block">
             <div className="cause-heading">
-              <span className="section-number">03 / THE END</span>
+              <span className="section-number">{t("03 / THE END")}</span>
               <Plus size={26} />
             </div>
-            <h2>Cause of Death</h2>
-            <strong>{causes[p.primaryCauseOfDeath]}</strong>
+            <h2>{t("Cause of Death")}</h2>
+            <strong>{t(causes[p.primaryCauseOfDeath])}</strong>
             <p>{p.causeExplanation}</p>
           </section>
           <section>
-            <span className="section-number">04 / THE AUTOPSY</span>
-            <h2>What I Got Wrong</h2>
+            <span className="section-number">{t("04 / THE AUTOPSY")}</span>
+            <h2>{t("What I Got Wrong")}</h2>
             <ContentList
               items={p.whatWentWrong}
-              empty="The creator hasn’t documented this yet."
+              empty={t("The creator hasn’t documented this yet.")}
             />
           </section>
           <section>
-            <h2>What Actually Worked</h2>
+            <h2>{t("What Actually Worked")}</h2>
             <ContentList
               items={p.whatWorked}
-              empty="The creator hasn’t documented this yet."
+              empty={t("The creator hasn’t documented this yet.")}
             />
           </section>
           <section>
-            <h2>What I Learned</h2>
+            <h2>{t("What I Learned")}</h2>
             <ContentList
               items={p.lessons}
-              empty="The creator hasn’t documented the lessons yet."
+              empty={t("The creator hasn’t documented the lessons yet.")}
             />
           </section>
           <section>
-            <span className="section-number">05 / THE REMAINS</span>
-            <h2>What Survived</h2>
+            <span className="section-number">{t("05 / THE REMAINS")}</span>
+            <h2>{t("What Survived")}</h2>
             <ContentList
               items={p.survivingAssets}
-              empty="Nothing was left behind."
+              empty={t("Nothing was left behind.")}
             />
           </section>
           <section className="future-block">
-            <span className="section-number">06 / THE NEXT CHAPTER</span>
-            <h2>What Happens Now?</h2>
+            <span className="section-number">{t("06 / THE NEXT CHAPTER")}</span>
+            <h2>{t("What Happens Now?")}</h2>
             <div className="next-steps">
               {p.desiredNextSteps.map((s) => (
                 <span key={s}>
                   <Plus size={16} />
-                  {nextSteps[s]}
+                  {t(nextSteps[s])}
                 </span>
               ))}
             </div>
             {p.contactUrl && (
               <>
                 <p>
-                  The creator has shared a public contact link for this project.
+                  {t(
+                    "The creator has shared a public contact link for this project.",
+                  )}{" "}
                 </p>
                 <InterestButton url={p.contactUrl} />
               </>

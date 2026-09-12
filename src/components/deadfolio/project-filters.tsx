@@ -1,10 +1,12 @@
 "use client";
 import { useState } from "react";
+import { useTranslations } from "@/components/locale";
 import { SlidersHorizontal } from "lucide-react";
 import type { Project } from "@/types/project";
 import { statuses, causes, categories } from "@/lib/schemas/project";
 import { ProjectGrid } from "./project-card";
 export function ProjectFilters({ projects }: { projects: Project[] }) {
+  const t = useTranslations();
   const [filters, setFilters] = useState({
     status: "",
     cause: "",
@@ -35,11 +37,15 @@ export function ProjectFilters({ projects }: { projects: Project[] }) {
         {(Object.keys(filters) as (keyof typeof filters)[]).map((key) => (
           <label key={key}>
             <span>
-              {key === "cause"
-                ? "Cause of death"
-                : key === "technology"
-                  ? "Technology"
-                  : key}
+              {t(
+                key === "cause"
+                  ? "Cause of death"
+                  : key === "technology"
+                    ? "Technology"
+                    : key === "category"
+                      ? "Category"
+                      : "Status",
+              )}
             </span>
             <select
               value={filters[key]}
@@ -48,18 +54,19 @@ export function ProjectFilters({ projects }: { projects: Project[] }) {
               }
             >
               <option value="">
-                All{" "}
-                {key === "cause"
-                  ? "causes"
-                  : key === "technology"
-                    ? "technologies"
-                    : key === "category"
-                      ? "categories"
-                      : "statuses"}
+                {t(
+                  key === "cause"
+                    ? "All causes"
+                    : key === "technology"
+                      ? "All technologies"
+                      : key === "category"
+                        ? "All categories"
+                        : "All statuses",
+                )}
               </option>
               {Object.entries(options[key]).map(([k, v]) => (
                 <option key={k} value={k}>
-                  {v}
+                  {t(v)}
                 </option>
               ))}
             </select>
@@ -68,7 +75,8 @@ export function ProjectFilters({ projects }: { projects: Project[] }) {
       </div>
       <div className="filter-results mono" aria-live="polite">
         <span>
-          {filtered.length} {filtered.length === 1 ? "RECORD" : "RECORDS"} FOUND
+          {filtered.length} {t(filtered.length === 1 ? "RECORD" : "RECORDS")}
+          {t("FOUND")}{" "}
         </span>
         {Object.values(filters).some(Boolean) && (
           <button
@@ -81,14 +89,14 @@ export function ProjectFilters({ projects }: { projects: Project[] }) {
               })
             }
           >
-            Clear filters ×
+            {t("Clear filters ×")}{" "}
           </button>
         )}
       </div>
       {!filtered.length && projects.length ? (
         <div className="empty-state">
-          <h2>No projects died this way.</h2>
-          <p>Try another combination of filters.</p>
+          <h2>{t("No projects died this way.")}</h2>
+          <p>{t("Try another combination of filters.")}</p>
         </div>
       ) : (
         <ProjectGrid projects={filtered} />

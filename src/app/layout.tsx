@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { LocalLink as Link, LocaleProvider } from "@/components/locale";
+import { getLocale } from "@/lib/i18n/server";
+import { translate } from "@/lib/i18n/dictionaries";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Navigation } from "@/components/navigation";
@@ -25,27 +27,34 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", images: ["/opengraph-image"] },
 };
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const t = (key: string) => translate(locale, key);
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html
+      lang={locale === "pt" ? "pt-BR" : "en"}
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+    >
       <body>
-        <a href="#main" className="skip-link">
-          Skip to content
-        </a>
-        <Navigation />
-        <main id="main">{children}</main>
-        <footer className="site-footer shell">
-          <Link className="logo" href="/">
-            <Logo />
-          </Link>
-          <p>Every failed project has a story worth keeping.</p>
-          <span className="mono">END OF FILE. NOT END OF STORY.</span>
-        </footer>
-        <AnalyticsProvider />
+        <LocaleProvider locale={locale}>
+          <a href="#main" className="skip-link">
+            {t("Skip to content")}
+          </a>
+          <Navigation />
+          <main id="main">{children}</main>
+          <footer className="site-footer shell">
+            <Link className="logo" href="/">
+              <Logo />
+            </Link>
+            <p>{t("Every failed project has a story worth keeping.")}</p>
+            <span className="mono">{t("END OF FILE. NOT END OF STORY.")}</span>
+          </footer>
+          <AnalyticsProvider />
+        </LocaleProvider>
       </body>
     </html>
   );

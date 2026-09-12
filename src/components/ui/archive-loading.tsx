@@ -1,6 +1,9 @@
+"use client";
 import { BrandMark } from "@/components/deadfolio/logo";
+import { useTranslations } from "@/components/locale";
 
 export default function Loading() {
+  const t = useTranslations();
   return (
     <div className="shell page-space archive-loading" role="status">
       <div className="archive-loading-heading">
@@ -8,13 +11,14 @@ export default function Loading() {
           <BrandMark className="loading-brand-mark" size={64} />
         </div>
         <div>
-          <span className="eyebrow">DEADFOLIO / ARCHIVE</span>
+          <span className="eyebrow">{t("DEADFOLIO / ARCHIVE")}</span>
           <p className="archive-loading-label">
-            Opening the archive<span aria-hidden="true">…</span>
+            {t("Opening the archive")}
+            <span aria-hidden="true">…</span>
           </p>
         </div>
         <span className="archive-loading-code mono" aria-hidden="true">
-          RETRIEVING STORIES
+          {t("RETRIEVING STORIES")}{" "}
         </span>
       </div>
       <div className="archive-loading-track" aria-hidden="true">
