@@ -228,7 +228,7 @@ export function renderContext(c: RepositoryContext) {
     `stars: ${f.stars}  forks: ${f.forks}  open_issues_and_prs: ${f.openIssues}`,
     `archived: ${f.archived}  disabled: ${f.disabled}  is_fork: ${f.fork}`,
     `created_at: ${day(f.createdAt)}  last_push: ${day(f.pushedAt)}  default_branch: ${f.defaultBranch}  head_sha: ${c.sha.slice(0, 12)}`,
-    `deterministic_status_from_metadata: ${c.deadScore.classification} (dead score ${c.deadScore.score}/100; signals: ${c.deadScore.signals.map((s) => (s.value !== undefined ? `${s.code}=${s.value}` : s.code)).join(", ")})`,
+    `deterministic_status_from_metadata: ${c.deadScore.classification} (dead score ${c.deadScore.score}/100, a heuristic; days_since_push=${c.deadScore.daysSincePush}; kind=${c.deadScore.kind}; signals: ${c.deadScore.signals.map((s) => (s.value !== undefined ? `${s.code}=${s.value}` : s.code)).join(", ")})`,
     ``,
     `# LANGUAGES (bytes)`,
     languages.length

@@ -5,7 +5,7 @@ import { getStore } from "@/lib/repositories/store";
 import { cached } from "@/lib/repositories/kv-store";
 import type { DiscoveredRepository, RepositoryFacts } from "@/types/autopsy";
 import { GitHubError, githubRequest, validUsername } from "./client";
-import { deadScore } from "./dead-score";
+import { calculateDeadScore } from "./dead-score";
 
 /** Subset of the GitHub REST repository object that discovery relies on. */
 export type GitHubRepository = {
@@ -24,6 +24,8 @@ export type GitHubRepository = {
   archived: boolean;
   disabled: boolean;
   fork: boolean;
+  is_template?: boolean;
+  private?: boolean;
   default_branch: string;
   created_at: string;
   pushed_at: string | null;
@@ -51,6 +53,7 @@ export function toRepositoryFacts(repo: GitHubRepository): RepositoryFacts {
     archived: repo.archived,
     disabled: repo.disabled,
     fork: repo.fork,
+    template: repo.is_template ?? false,
     defaultBranch: repo.default_branch,
     createdAt: repo.created_at,
     pushedAt: repo.pushed_at,
@@ -110,7 +113,7 @@ export async function discoverRepositories(login: string): Promise<Discovery> {
   return {
     ...facts,
     repositories: facts.repositories
-      .map((repo) => ({ ...repo, deadScore: deadScore(repo, now) }))
+      .map((repo) => ({ ...repo, deadScore: calculateDeadScore(repo, now) }))
       .sort(
         (a, b) =>
           b.deadScore.score - a.deadScore.score ||
@@ -119,20 +122,25 @@ export async function discoverRepositories(login: string): Promise<Discovery> {
   };
 }
 
+/**
+ * Fetches one repository's public metadata. GitHub answers 404 for private
+ * repositories we cannot see, so "not found" also covers "not public"; when a
+ * token does reveal a private flag we refuse explicitly.
+ */
 export async function getRepository(owner: string, repo: string) {
   return cached(
     getStore(),
     "github-repo",
     `${owner}/${repo}`.toLowerCase(),
     REPOSITORY_TTL,
-    async () =>
-      toRepositoryFacts(
-        (
-          await githubRequest<GitHubRepository>(
-            `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
-          )
-        ).data,
-      ),
+    async () => {
+      const { data } = await githubRequest<GitHubRepository>(
+        `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
+      );
+      if (data.private)
+        throw new GitHubError("private", "This repository is not public.");
+      return toRepositoryFacts(data);
+    },
   );
 }
 

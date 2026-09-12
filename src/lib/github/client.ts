@@ -1,9 +1,11 @@
 import "server-only";
+import { validRepositoryName, validUsername } from "./reference";
 
 export class GitHubError extends Error {
   constructor(
     public readonly kind:
       | "not-found"
+      | "private"
       | "empty"
       | "rate-limited"
       | "unavailable"
@@ -17,15 +19,8 @@ export class GitHubError extends Error {
 }
 
 const API = "https://api.github.com";
-const USERNAME = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
-const REPOSITORY = /^[A-Za-z0-9_.-]{1,100}$/;
 
-export function validUsername(value: string) {
-  return USERNAME.test(value);
-}
-export function validRepositoryName(value: string) {
-  return REPOSITORY.test(value) && value !== "." && value !== "..";
-}
+export { validRepositoryName, validUsername } from "./reference";
 export function assertRepositoryPath(owner: string, repo: string) {
   if (!validUsername(owner) || !validRepositoryName(repo))
     throw new GitHubError("invalid", "Invalid repository path.");
