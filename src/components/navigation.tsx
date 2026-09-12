@@ -6,7 +6,8 @@ import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/deadfolio/logo";
 import { trackEvent } from "./analytics";
-export function BuryLink({
+/** Primary call to action everywhere: start a profile scan. */
+export function ScanLink({
   children,
   className = "button primary",
 }: {
@@ -16,11 +17,11 @@ export function BuryLink({
   const t = useTranslations();
   return (
     <Link
-      href="/bury"
+      href="/autopsy"
       className={className}
-      onClick={() => trackEvent("Bury project clicked")}
+      onClick={() => trackEvent("Scan GitHub clicked")}
     >
-      {children ?? t("Bury a Project")}
+      {children ?? t("Scan my GitHub")}
       <ArrowUpRight size={18} />
     </Link>
   );
@@ -57,7 +58,7 @@ export function Navigation() {
         </nav>
         <div className="nav-actions">
           <LanguageSwitcher className="desktop-language-switcher" />
-          <BuryLink />
+          <ScanLink />
           <button
             className="icon-button mobile-menu"
             aria-label={t(open ? "Close menu" : "Open menu")}

@@ -760,14 +760,6 @@ p {
   color: var(--text);
   font-weight: 500;
 }
-.detail-cover {
-  width: 100%;
-  max-height: 620px;
-  object-fit: contain;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  margin-bottom: 45px;
-}
 .autopsy-layout {
   border-top: 1px solid var(--line);
   padding-top: 45px;
@@ -882,26 +874,6 @@ p {
 }
 .cause-block p {
   color: #cad1bf;
-}
-.screenshots {
-  display: grid;
-  gap: 24px;
-  margin-top: 28px;
-}
-.screenshots figure {
-  margin: 0;
-}
-.screenshots img {
-  border: 1px solid var(--line);
-  width: 100%;
-  max-height: 600px;
-  object-fit: contain;
-  background: var(--surface);
-}
-.screenshots figcaption {
-  color: var(--muted);
-  font-size: 0.8125rem;
-  margin-top: 8px;
 }
 .next-steps {
   display: flex;
@@ -1353,66 +1325,6 @@ input::placeholder {
     transform: rotate(360deg);
   }
 }
-.admin-login {
-  max-width: 500px;
-  margin: 15px auto;
-}
-.admin-login h1 {
-  font-size: 3rem;
-  margin: 18px 0;
-}
-.admin-login > p {
-  margin-bottom: 30px;
-}
-.admin-login > .button {
-  margin-top: 24px;
-}
-.admin-group {
-  margin-top: 55px;
-}
-.admin-group > h2 {
-  font-size: 1.75rem;
-  padding-bottom: 22px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 24px;
-}
-.admin-record {
-  border: 1px solid var(--line);
-  padding: 26px;
-  margin-bottom: 18px;
-  background: var(--surface);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 25px;
-  align-items: center;
-}
-.admin-record h3 {
-  font-size: 1.5rem;
-}
-.admin-record p {
-  font-size: 0.875rem;
-  margin-top: 10px;
-}
-.admin-record .mono {
-  font-size: 0.75rem;
-}
-.admin-record code {
-  font-size: 0.75rem;
-  overflow-wrap: anywhere;
-}
-.admin-record details {
-  margin-top: 12px;
-  font-size: 0.8125rem;
-  color: var(--muted);
-}
-.admin-record summary {
-  cursor: pointer;
-}
-.admin-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
 .inline-demo {
   font-size: 0.625rem;
   letter-spacing: 0.05em;
@@ -1422,9 +1334,6 @@ input::placeholder {
   padding: 4px 7px;
   margin-left: 14px;
   color: var(--muted);
-}
-.admin-preview-actions {
-  padding-top: 30px;
 }
 .skeleton {
   background: linear-gradient(
@@ -1521,9 +1430,6 @@ input::placeholder {
   }
   .editor-panel {
     padding: 26px;
-  }
-  .admin-record {
-    grid-template-columns: 1fr;
   }
   .site-footer {
     flex-wrap: wrap;
@@ -1810,9 +1716,6 @@ input::placeholder {
   .cause-block > strong {
     font-size: 1.9rem;
   }
-  .detail-cover {
-    margin-bottom: 25px;
-  }
   .story-start h1 {
     font-size: 2.8rem;
   }
@@ -1889,15 +1792,6 @@ input::placeholder {
   .metrics > div {
     flex: 1 0 40%;
   }
-  .admin-record {
-    padding: 20px;
-  }
-  .admin-login h1 {
-    font-size: 2.5rem;
-  }
-  .admin-group h2 {
-    font-size: 1.5rem;
-  }
 }
 @media (max-width: 370px) {
   .shell {
@@ -1956,8 +1850,7 @@ input::placeholder {
 }
 
 .card-body h3,
-.cover-title,
-.admin-record h3 {
+.cover-title {
   overflow-wrap: anywhere;
 }
 .existing-image .field {
@@ -2192,8 +2085,7 @@ select option {
 .upload-control,
 .intention-options label,
 .icon-button,
-.original-story summary,
-.admin-record summary {
+.original-story summary {
   transition:
     border-color 180ms,
     background-color 180ms,
@@ -2289,8 +2181,7 @@ select:disabled {
   border-color: var(--subtle);
   background-color: var(--surface);
 }
-.original-story summary,
-.admin-record summary {
+.original-story summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2299,24 +2190,20 @@ select:disabled {
   min-height: 32px;
   color: var(--muted);
 }
-.original-story summary::-webkit-details-marker,
-.admin-record summary::-webkit-details-marker {
+.original-story summary::-webkit-details-marker {
   display: none;
 }
-.original-story summary::after,
-.admin-record summary::after {
+.original-story summary::after {
   content: "+";
   color: var(--accent);
   font-family: var(--font-geist-mono), monospace;
   font-size: 1.125rem;
   flex: none;
 }
-.original-story[open] > summary::after,
-.admin-record details[open] > summary::after {
+.original-story[open] > summary::after {
   content: "−";
 }
-.original-story summary:hover,
-.admin-record summary:hover {
+.original-story summary:hover {
   color: var(--text);
 }
 
@@ -2511,13 +2398,6 @@ select:disabled {
 /* Repository Autopsy: discovery, lab bench and report. */
 .autopsy-heading p {
   max-width: 720px;
-}
-.autopsy-hint {
-  margin-top: -10px;
-}
-.autopsy-hint .text-link {
-  padding: 0;
-  color: var(--accent);
 }
 .username-form {
   display: grid;
@@ -3073,6 +2953,17 @@ select:disabled {
   .how-it-works li:nth-child(-n + 2) {
     border-bottom: 1px solid var(--line);
   }
+  .home-steps {
+    grid-template-columns: 1fr;
+  }
+  .home-steps li,
+  .home-steps li:nth-child(2) {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .home-steps li:last-child {
+    border-bottom: 0;
+  }
 }
 @media (max-width: 760px) {
   .username-form {
@@ -3136,5 +3027,262 @@ select:disabled {
   }
   .hero-pt h1 {
     font-size: clamp(2.3rem, 8vw, 3.8rem);
+  }
+}
+
+/* Autopsy entry modes, scan summary, Dead Score */
+.entry-modes {
+  margin-top: 30px;
+}
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3px;
+  background: #0e100c;
+  gap: 3px;
+}
+.mode-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mode-tab:hover {
+  color: var(--text);
+}
+.mode-tab.selected {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.mode-panel .mode-description {
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.mode-panel .username-form {
+  margin-top: 16px;
+}
+.repository-form .username-field input {
+  padding-left: 0;
+}
+.verdict-possibly-abandoned i {
+  background: #e0a45c;
+}
+.verdict-probably-abandoned i {
+  background: #ea8a6e;
+}
+.repo-row.repo-possibly-abandoned,
+.repo-row.repo-probably-abandoned {
+  border-left: 2px solid #6d7358;
+  padding-left: 18px;
+}
+.repo-kind {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--subtle);
+  border: 1px dashed var(--line);
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+.repo-score-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+.repo-score-row .repo-signals {
+  margin: 0;
+}
+.dead-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border-bottom: 1px dotted var(--line);
+  cursor: help;
+}
+.dead-score strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.repo-head .repo-meta .dead-score {
+  text-transform: none;
+}
+.scan-summary {
+  margin-top: 30px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--surface);
+  padding: 26px 26px 20px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px 36px;
+}
+.scan-total {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 32px;
+  border-right: 1px solid var(--line);
+}
+.scan-total strong {
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.scan-total span {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.scan-counts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  align-content: start;
+}
+.scan-counts li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.scan-counts li strong {
+  font-size: 1.25rem;
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.scan-counts li.verdict-likely-dead strong,
+.scan-counts li.verdict-probably-abandoned strong {
+  color: var(--danger);
+}
+.scan-counts li.verdict-active strong {
+  color: var(--accent);
+}
+.scan-counts li[title] {
+  cursor: help;
+  border-bottom: 1px dotted var(--line);
+}
+.scan-insights {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px 24px;
+  margin: 6px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.scan-insights dt {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+.scan-insights dd {
+  margin: 4px 0 0;
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+.scan-summary .privacy-note {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+}
+.verdict-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 12px 0 18px;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+.inference-label {
+  margin: 8px 0 14px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--subtle);
+}
+.cause-creator .inference-label {
+  color: var(--accent);
+}
+.creator-voice textarea {
+  border-color: var(--accent);
+}
+.unverified {
+  margin-left: 10px;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--subtle);
+  vertical-align: middle;
+  cursor: help;
+}
+.small-print {
+  font-size: 0.8125rem;
+}
+.draft-editor {
+  margin-top: 24px;
+}
+.draft-editor legend {
+  margin-bottom: 14px;
+}
+.how-section {
+  padding-top: 0;
+}
+.home-steps {
+  margin-top: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.home-steps li {
+  padding: 30px 28px 34px;
+}
+.home-steps p {
+  font-size: 1.0625rem;
+}
+@media (max-width: 760px) {
+  .mode-switch {
+    width: 100%;
+  }
+  .mode-tab {
+    flex: 1;
+    justify-content: center;
+  }
+  .scan-summary {
+    grid-template-columns: 1fr;
+    padding: 22px 18px 16px;
+  }
+  .scan-total {
+    padding-right: 0;
+    padding-bottom: 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .repo-row.repo-possibly-abandoned,
+  .repo-row.repo-probably-abandoned {
+    padding-left: 14px;
   }
 }

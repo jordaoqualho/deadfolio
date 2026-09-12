@@ -12,17 +12,17 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Deadfolio — Dead projects belong in your portfolio too.",
+    default: "Deadfolio — Your GitHub is full of projects you left behind.",
     template: "%s | Deadfolio",
   },
   description:
-    "A public home for abandoned technology projects. Share what went wrong, preserve what you built, and give the work a second life.",
+    "Deadfolio discovers forgotten GitHub projects, analyzes selected repositories and generates evidence-based AI autopsies.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "Deadfolio",
-    title: "Dead projects belong in your portfolio too.",
-    description: "Good projects die. Their work doesn’t have to.",
+    title: "Your GitHub is full of projects you left behind.",
+    description: "Deadfolio digs them up.",
     images: ["/opengraph-image"],
   },
   twitter: { card: "summary_large_image", images: ["/opengraph-image"] },

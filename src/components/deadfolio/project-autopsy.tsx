@@ -11,24 +11,28 @@ import {
 import { ArrowUpRight, ArrowLeft, Plus } from "lucide-react";
 import { LocalLink as Link } from "@/components/locale";
 import { InterestButton } from "./interest-button";
-export function ProjectAutopsy({
-  project: p,
-  preview = false,
-  submissionPreview = false,
-}: {
-  project: Project;
-  preview?: boolean;
-  submissionPreview?: boolean;
-}) {
+
+/** `https://github.com/owner/repo` → `/autopsy/owner/repo`, or null. */
+function autopsyPath(githubUrl: string) {
+  try {
+    const url = new URL(githubUrl);
+    if (!/^(www\.)?github\.com$/i.test(url.hostname)) return null;
+    const [owner, repo] = url.pathname.replace(/^\/+/, "").split("/");
+    return owner && repo ? `/autopsy/${owner}/${repo.replace(/\.git$/, "")}` : null;
+  } catch {
+    return null;
+  }
+}
+
+export function ProjectAutopsy({ project: p }: { project: Project }) {
   const t = useTranslations();
+  const autopsy = p.source === "autopsy" ? autopsyPath(p.links.github) : null;
   return (
     <article className="shell autopsy page-space">
-      {!submissionPreview && (
-        <Link href={preview ? "/admin" : "/graveyard"} className="back-link">
-          <ArrowLeft size={16} />
-          {t(preview ? "Back to moderation" : "Back to the Graveyard")}
-        </Link>
-      )}
+      <Link href="/graveyard" className="back-link">
+        <ArrowLeft size={16} />
+        {t("Back to the Graveyard")}
+      </Link>
       {p.isDemo && (
         <div className="notice">
           {t("Sample project ·")}{" "}
@@ -39,11 +43,6 @@ export function ProjectAutopsy({
           )}
         </div>
       )}
-      {preview && (
-        <div className="notice">
-          {t("Private moderation preview ·")} {p.moderationStatus}
-        </div>
-      )}
       <header className="autopsy-header">
         <div className="eyebrow">
           {t("PROJECT POSTMORTEM /")} {p.id.slice(0, 12)}
@@ -52,10 +51,18 @@ export function ProjectAutopsy({
           {p.title}
           <span className="accent">.</span>
         </h1>
-        <p className="autopsy-tagline">{p.tagline}</p>
+        {p.tagline && <p className="autopsy-tagline">{p.tagline}</p>}
         <div className="autopsy-byline">
           <span>
             {t("Filed by")} <strong>{p.creator.name}</strong>
+            {!p.ownershipVerified && !p.isDemo && (
+              <span
+                className="unverified mono"
+                title={t("Deadfolio does not verify repository ownership yet.")}
+              >
+                {t("UNVERIFIED")}
+              </span>
+            )}
           </span>
           <span className={`status status-${p.status}`}>
             <i />
@@ -63,13 +70,6 @@ export function ProjectAutopsy({
           </span>
         </div>
       </header>
-      {p.coverImage && (
-        <img
-          className="detail-cover"
-          src={p.coverImage.url}
-          alt={p.coverImage.alt}
-        />
-      )}
       <div className="autopsy-layout">
         <aside className="project-facts">
           <span className="eyebrow">{t("THE RECORD")}</span>
@@ -84,6 +84,14 @@ export function ProjectAutopsy({
                 p.estimatedHours !== null
                   ? `${p.estimatedHours.toLocaleString()} ${t("hours")}`
                   : "",
+              ],
+              [
+                "Source",
+                p.source === "autopsy"
+                  ? "Repository autopsy"
+                  : p.source === "sample"
+                    ? "Sample record"
+                    : "",
               ],
             ]
               .filter(([, v]) => v)
@@ -124,6 +132,12 @@ export function ProjectAutopsy({
                   <ArrowUpRight size={15} />
                 </a>
               ))}
+            {autopsy && (
+              <Link href={autopsy}>
+                {t("Repository autopsy")}
+                <ArrowUpRight size={15} />
+              </Link>
+            )}
           </div>
         </aside>
         <div className="autopsy-story">
@@ -131,7 +145,7 @@ export function ProjectAutopsy({
             <span className="section-number">{t("01 / THE BEGINNING")}</span>
             <h2>{t("The Idea")}</h2>
             {p.summary && <p className="lead">{p.summary}</p>}
-            <p>{p.originalIdea}</p>
+            {p.originalIdea && <p>{p.originalIdea}</p>}
             {p.whyBuilt && <p>{p.whyBuilt}</p>}
           </section>
           <section>
@@ -141,31 +155,26 @@ export function ProjectAutopsy({
               items={p.whatWasBuilt}
               empty={t("The creator hasn’t documented the build yet.")}
             />
-            {p.screenshots.length > 0 && (
-              <div className="screenshots">
-                {p.screenshots.map((s) => (
-                  <figure key={s.url}>
-                    <a href={s.url} target="_blank" rel="noopener noreferrer">
-                      <img src={s.url} alt={s.alt} loading="lazy" />
-                    </a>
-                    <figcaption>{s.alt}</figcaption>
-                  </figure>
-                ))}
-              </div>
-            )}
           </section>
-          <section className="cause-block">
+          <section className={`cause-block cause-${p.causeSource}`}>
             <div className="cause-heading">
               <span className="section-number">{t("03 / THE END")}</span>
               <Plus size={26} />
             </div>
             <h2>{t("Cause of Death")}</h2>
+            <p className="inference-label mono">
+              {t(
+                p.causeSource === "creator"
+                  ? "ACCORDING TO THE CREATOR"
+                  : "INFERRED FROM REPOSITORY EVIDENCE",
+              )}
+            </p>
             <strong>{t(causes[p.primaryCauseOfDeath])}</strong>
-            <p>{p.causeExplanation}</p>
+            {p.causeExplanation && <p>{p.causeExplanation}</p>}
           </section>
           <section>
             <span className="section-number">{t("04 / THE AUTOPSY")}</span>
-            <h2>{t("What I Got Wrong")}</h2>
+            <h2>{t("What Went Wrong")}</h2>
             <ContentList
               items={p.whatWentWrong}
               empty={t("The creator hasn’t documented this yet.")}
@@ -178,13 +187,12 @@ export function ProjectAutopsy({
               empty={t("The creator hasn’t documented this yet.")}
             />
           </section>
-          <section>
-            <h2>{t("What I Learned")}</h2>
-            <ContentList
-              items={p.lessons}
-              empty={t("The creator hasn’t documented the lessons yet.")}
-            />
-          </section>
+          {p.lessons.length > 0 && (
+            <section>
+              <h2>{t("What I Learned")}</h2>
+              <ContentList items={p.lessons} empty="" />
+            </section>
+          )}
           <section>
             <span className="section-number">{t("05 / THE REMAINS")}</span>
             <h2>{t("What Survived")}</h2>

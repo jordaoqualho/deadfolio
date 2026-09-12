@@ -66,7 +66,7 @@ export default async function ProjectPage({
     datePublished: p.publishedAt,
     url: `${siteUrl}${localePath(locale, `/projects/${p.slug}`)}`,
     inLanguage: locale === "pt" ? "pt-BR" : "en",
-    ...(p.coverImage ? { image: `${siteUrl}${p.coverImage.url}` } : {}),
+    image: `${siteUrl}/projects/${p.slug}/opengraph-image`,
   };
   return (
     <>

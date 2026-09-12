@@ -1,11 +1,11 @@
 import { pageMetadata } from "@/lib/i18n/metadata";
 import { getTranslations } from "@/lib/i18n/server";
-import { BuryLink } from "@/components/navigation";
+import { ScanLink } from "@/components/navigation";
 export async function generateMetadata() {
   return pageMetadata(
     "/about",
     "About",
-    "Built something that didn’t make it? Bury it here.",
+    "Most portfolios show what survived. Deadfolio also remembers what didn’t.",
   );
 }
 export default async function About() {
@@ -17,7 +17,7 @@ export default async function About() {
         {t("Most portfolios show")} <br />
         {t("what survived.")} <br />
         <span className="muted">
-          {t("Deadfolio shows")} <br />
+          {t("Deadfolio also remembers")} <br />
           {t("what didn’t.")}{" "}
         </span>
       </h1>
@@ -34,7 +34,12 @@ export default async function About() {
         </p>
         <p>
           {t(
-            "Deadfolio is a public home for those stories: what you tried, what you built, what went wrong, and what’s still worth keeping.",
+            "Most of that work is still sitting in public repositories. Deadfolio starts there: it reads what the repository can prove, separates evidence from inference, and reconstructs the project with almost no work from its creator.",
+          )}{" "}
+        </p>
+        <p>
+          {t(
+            "The repository cannot tell us why development stopped, so that is the one thing we ask. Everything else is already written in the code, the commits and the README.",
           )}{" "}
         </p>
         <p>
@@ -43,8 +48,8 @@ export default async function About() {
           )}{" "}
         </p>
         <div className="about-cta">
-          <h2>{t("Built something that didn’t make it? Bury it here.")}</h2>
-          <BuryLink />
+          <h2>{t("Left something behind on GitHub? Dig it up.")}</h2>
+          <ScanLink />
         </div>
       </div>
     </article>

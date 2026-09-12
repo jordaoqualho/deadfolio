@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-export const alt = "Deadfolio — Dead projects belong in your portfolio too.";
+export const alt = "Deadfolio — Your GitHub is full of projects you left behind.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export default function Image() {
@@ -17,18 +17,18 @@ export default function Image() {
       }}
     >
       <div style={{ fontSize: 25, color: "#c6f36b" }}>
-        THE PORTFOLIO OF THINGS THAT DIDN’T MAKE IT
+        FAILED PROJECTS BELONG IN YOUR PORTFOLIO
       </div>
       <div
         style={{
-          fontSize: 84,
+          fontSize: 66,
           letterSpacing: -4,
           display: "flex",
           flexDirection: "column",
         }}
       >
-        <span>Good projects die.</span>
-        <span style={{ color: "#a2a59a" }}>Their work doesn’t have to.</span>
+        <span>Your GitHub is full of projects you left behind.</span>
+        <span style={{ color: "#a2a59a" }}>Deadfolio digs them up.</span>
       </div>
       <div
         style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 32 }}

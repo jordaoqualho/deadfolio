@@ -26,24 +26,18 @@ export function ProjectCard({
         className={`card-cover cover-${index % 2}`}
         aria-label={`${t("Read project postmortem")}: ${p.title}`}
       >
-        {p.coverImage ? (
-          <img src={p.coverImage.url} alt={p.coverImage.alt} loading="lazy" />
-        ) : (
-          <>
-            <span className="mono record-code">
-              {t("PROJECT ARCHIVE /")} {String(index + 1).padStart(3, "0")}
-            </span>
-            <span className="cover-title">
-              {p.title}
-              <span>_</span>
-            </span>
-            <Plus className="cover-plus" size={40} strokeWidth={1} />
-            <span className="cover-caption mono">
-              {t(stages[p.stage])}
-              <ArrowUpRight size={18} />
-            </span>
-          </>
-        )}
+        <span className="mono record-code">
+          {t("PROJECT ARCHIVE /")} {String(index + 1).padStart(3, "0")}
+        </span>
+        <span className="cover-title">
+          {p.title}
+          <span>_</span>
+        </span>
+        <Plus className="cover-plus" size={40} strokeWidth={1} />
+        <span className="cover-caption mono">
+          {t(stages[p.stage])}
+          <ArrowUpRight size={18} />
+        </span>
         {p.isDemo && <span className="demo-label">{t("SAMPLE PROJECT")}</span>}
       </Link>
       <div className="card-body">
@@ -92,9 +86,9 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
     <div className="empty-state">
       <Plus size={30} />
       <h3>{t("Nothing buried here yet.")}</h3>
-      <p>{t("Every archive starts with a story. Yours could be the first.")}</p>
-      <Link href="/bury" className="text-link">
-        {t("Bury a Project")} <ArrowRight size={18} />
+      <p>{t("Every archive starts with a repository. Yours could be the first.")}</p>
+      <Link href="/autopsy" className="text-link">
+        {t("Scan my GitHub")} <ArrowRight size={18} />
       </Link>
     </div>
   );
