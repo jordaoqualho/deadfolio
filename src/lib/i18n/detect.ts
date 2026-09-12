@@ -33,6 +33,6 @@ export function readLocaleCookie(
 
 export function localePrefixPath(pathname: string, locale: Locale) {
   const clean = pathname.replace(/^\/pt(?=\/|$)/, "") || "/";
-  if (/^\/(admin|api|media)(\/|$)/.test(clean)) return clean;
+  if (/^\/api(\/|$)/.test(clean)) return clean;
   return locale === "pt" ? `/pt${clean === "/" ? "" : clean}` : clean;
 }

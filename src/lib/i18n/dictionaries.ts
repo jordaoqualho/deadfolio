@@ -2,10 +2,7 @@ export type Locale = "en" | "pt";
 
 // English copy is also the stable key. Portuguese must cover every English key.
 const portuguese = {
-  "Check your project name, contact details and URL.":
-    "Confira o nome do projeto, seus dados de contato e o link.",
-  "Some edited details are too long. Shorten them before submitting.":
-    "Alguns detalhes editados estão longos demais. Resuma antes de enviar.",
+  // Layout and navigation
   "Skip to content": "Pular para o conteúdo",
   "Deadfolio home": "Página inicial do Deadfolio",
   "Main navigation": "Navegação principal",
@@ -15,30 +12,43 @@ const portuguese = {
   Language: "Idioma",
   Graveyard: "Cemitério",
   "The Graveyard": "O Cemitério",
+  Autopsy: "Autópsia",
   About: "Sobre",
-  "Bury a Project": "Enterre um projeto",
-  "Bury your project": "Enterre seu projeto",
+  "Scan my GitHub": "Analisar meu GitHub",
+  "Paste a repository": "Colar um repositório",
   "Every failed project has a story worth keeping.":
     "Todo projeto que não deu certo tem uma história que vale guardar.",
   "END OF FILE. NOT END OF STORY.": "FIM DO ARQUIVO. A HISTÓRIA CONTINUA.",
-  "The portfolio of things that didn’t make it":
-    "O portfólio dos projetos que ficaram pelo caminho",
-  "Good projects die.": "Projetos bons também morrem.",
-  "Deadfolio is where developers and makers document abandoned projects, share what went wrong and preserve what was worth building.":
-    "Deadfolio é o lugar onde devs e makers contam a história dos projetos que não deram certo, compartilham o que aprenderam e preservam aquilo que ainda vale a pena.",
-  "Explore the Graveyard": "Explore o cemitério",
+
+  // Home
+  "Failed projects belong in your portfolio":
+    "Projetos que não deram certo também fazem parte do seu portfólio",
+  "Your GitHub is full of projects you left behind.":
+    "Seu GitHub está cheio de projetos que ficaram pelo caminho.",
+  "Deadfolio digs them up.": "O Deadfolio encontra eles.",
+  "Scan your public repositories, find the projects that stopped moving and run an AI autopsy to see what happened, what survived and whether they're worth another shot.":
+    "Analise seus repositórios públicos, encontre projetos esquecidos e faça uma autópsia para descobrir o que aconteceu, o que ainda presta e se vale a pena dar uma segunda vida.",
   "Archive philosophy": "O propósito do arquivo",
   "DEADFOLIO / ARCHIVE": "DEADFOLIO / ARQUIVO",
   "THE CODE REMAINS.": "O CÓDIGO FICA.",
   "THE LESSONS REMAIN.": "O APRENDIZADO FICA.",
   "KEEP THE STORY.": "GUARDE A HISTÓRIA.",
   "STATUS: WORTH KEEPING": "STATUS: VALE GUARDAR",
-  "Dead projects belong in your portfolio too.":
-    "Projetos que morreram também merecem um lugar no seu portfólio.",
+  "Evidence first. Stories second.": "Evidências primeiro. Histórias depois.",
   "SCROLL TO EXHUME": "ROLE PARA DESCOBRIR",
+  "How it works": "Como funciona",
+  "01 — Scan": "01 — Analisar",
+  "02 — Autopsy": "02 — Autópsia",
+  "03 — Preserve": "03 — Preservar",
+  "Deadfolio checks public GitHub repository metadata. No AI required.":
+    "O Deadfolio verifica os metadados públicos dos repositórios no GitHub. Sem IA nessa etapa.",
+  "Pick a project and Gemini examines the repository.":
+    "Escolha um projeto e o Gemini examina o repositório.",
+  "Confirm what actually happened and add the project to your Deadfolio.":
+    "Confirme o que realmente aconteceu e adicione o projeto ao seu Deadfolio.",
   "Archive statistics": "Números do arquivo",
   "Projects buried": "Projetos enterrados",
-  "Reported hours invested": "Horas de trabalho informadas",
+  "Filed from repository autopsies": "Vindos de autópsias de repositório",
   "Projects revived": "Projetos retomados",
   "THE PUBLIC RECORD": "O ARQUIVO PÚBLICO",
   "Projects ended. Lessons didn’t.":
@@ -49,6 +59,8 @@ const portuguese = {
   "in your GitHub?": "no seu GitHub?",
   "You already built it. You already learned from it. Don’t let the story disappear with the repository.":
     "Você já construiu. Já aprendeu. Não deixe a história desaparecer junto com o repositório.",
+
+  // Graveyard and cards
   "AN ARCHIVE, NOT A LEADERBOARD": "UM ARQUIVO, NÃO UMA COMPETIÇÃO",
   Status: "Status",
   "Cause of death": "Por que parou",
@@ -69,8 +81,10 @@ const portuguese = {
   "Read the autopsy": "Leia o postmortem",
   "Read project postmortem": "Ler o postmortem do projeto",
   "Nothing buried here yet.": "Ainda não há projetos por aqui.",
-  "Every archive starts with a story. Yours could be the first.":
-    "Todo arquivo começa com uma história. A sua pode ser a primeira.",
+  "Every archive starts with a repository. Yours could be the first.":
+    "Todo arquivo começa com um repositório. O seu pode ser o primeiro.",
+
+  // Enumerations
   "Developer Tool": "Ferramenta para devs",
   AI: "IA",
   "Mobile App": "Aplicativo mobile",
@@ -102,39 +116,51 @@ const portuguese = {
   "Available for adoption": "Disponível para adoção",
   "Happy to open source": "Abrir o código",
   "Open to offers": "Aceitar propostas",
+
+  // About
   "WHY THIS EXISTS": "POR QUE ESTAMOS AQUI",
   "Most portfolios show": "A maioria dos portfólios mostra",
   "what survived.": "o que deu certo.",
-  "Deadfolio shows": "O Deadfolio mostra",
+  "Deadfolio also remembers": "O Deadfolio também lembra",
   "what didn’t.": "o que ficou pelo caminho.",
+  "Most portfolios show what survived. Deadfolio also remembers what didn’t.":
+    "A maioria dos portfólios mostra o que deu certo. O Deadfolio também lembra o que ficou pelo caminho.",
   "People build things that fail. Good ideas meet bad timing. Side projects outgrow spare time. Products work beautifully and still find no market.":
     "A gente constrói coisas que não dão certo. Boas ideias chegam na hora errada. Projetos paralelos exigem mais tempo do que temos. Produtos funcionam muito bem e, mesmo assim, não encontram seu público.",
   "Failure doesn’t erase engineering work.":
     "Dar errado não apaga o trabalho de engenharia.",
   "Failure doesn’t erase lessons.": "Não apaga o aprendizado.",
   "Failure doesn’t erase creativity.": "Não apaga a criatividade.",
-  "Deadfolio is a public home for those stories: what you tried, what you built, what went wrong, and what’s still worth keeping.":
-    "O Deadfolio é um lugar público para essas histórias: o que você tentou, o que construiu, o que deu errado e o que ainda vale guardar.",
+  "Most of that work is still sitting in public repositories. Deadfolio starts there: it reads what the repository can prove, separates evidence from inference, and reconstructs the project with almost no work from its creator.":
+    "Boa parte desse trabalho ainda está em repositórios públicos. O Deadfolio começa por aí: lê o que o repositório consegue provar, separa evidência de inferência e reconstrói o projeto quase sem esforço de quem criou.",
+  "The repository cannot tell us why development stopped, so that is the one thing we ask. Everything else is already written in the code, the commits and the README.":
+    "O repositório não consegue dizer por que o desenvolvimento parou, então essa é a única coisa que perguntamos. Todo o resto já está escrito no código, nos commits e no README.",
   "Some projects deserve a second life. Others deserve a proper ending. Both belong here.":
     "Alguns projetos merecem uma segunda chance. Outros, um encerramento digno. Aqui há espaço para os dois.",
-  "Built something that didn’t make it? Bury it here.":
-    "Construiu algo que não foi pra frente? Enterre aqui.",
-  "Back to moderation": "Voltar para a moderação",
+  "Left something behind on GitHub? Dig it up.":
+    "Deixou algo pelo caminho no GitHub? Desenterre.",
+
+  // Project postmortem page
   "Back to the Graveyard": "Voltar para o cemitério",
   "Sample project ·": "Projeto de exemplo ·",
   "Based on the supplied Fintal description. Unknown details are left blank.":
     "Baseado na descrição fornecida do Fintal. Detalhes desconhecidos ficaram em branco.",
   "Fictional demo content, created to show how a postmortem works.":
     "Exemplo fictício criado para mostrar como funciona um postmortem.",
-  "Private moderation preview ·": "Prévia privada para moderação ·",
   "PROJECT POSTMORTEM /": "POSTMORTEM DO PROJETO /",
   "Filed by": "Compartilhado por",
+  UNVERIFIED: "NÃO VERIFICADO",
+  "Deadfolio does not verify repository ownership yet.":
+    "O Deadfolio ainda não verifica a propriedade do repositório.",
   "THE RECORD": "O REGISTRO",
   "Stage reached": "Até onde chegou",
   "Development period": "Período de desenvolvimento",
   "Development time": "Tempo de desenvolvimento",
   "Estimated time invested": "Tempo investido estimado",
   hours: "horas",
+  Source: "Origem",
+  "Repository autopsy": "Autópsia de repositório",
+  "Sample record": "Registro de exemplo",
   TECHNOLOGY: "TECNOLOGIA",
   website: "site",
   profile: "perfil",
@@ -147,14 +173,15 @@ const portuguese = {
     "Ainda não há detalhes sobre o que foi construído.",
   "03 / THE END": "03 / O FIM",
   "Cause of Death": "Por que parou",
+  "ACCORDING TO THE CREATOR": "SEGUNDO QUEM CRIOU",
+  "INFERRED FROM REPOSITORY EVIDENCE":
+    "INFERIDO DAS EVIDÊNCIAS DO REPOSITÓRIO",
   "04 / THE AUTOPSY": "04 / A AUTÓPSIA",
-  "What I Got Wrong": "O que deu errado",
+  "What Went Wrong": "O que deu errado",
   "The creator hasn’t documented this yet.":
     "Essa parte ainda não foi documentada.",
   "What Actually Worked": "O que funcionou",
   "What I Learned": "O que aprendi",
-  "The creator hasn’t documented the lessons yet.":
-    "O aprendizado ainda não foi documentado.",
   "05 / THE REMAINS": "05 / O QUE FICOU",
   "What Survived": "O que sobreviveu",
   "Nothing was left behind.": "Nenhum material foi informado.",
@@ -163,6 +190,8 @@ const portuguese = {
   "The creator has shared a public contact link for this project.":
     "Quem criou este projeto deixou um link público para contato.",
   "I’m interested in this project": "Tenho interesse neste projeto",
+
+  // Errors and loading
   "404 / MISSING RECORD": "404 / REGISTRO NÃO ENCONTRADO",
   "No remains found.": "Nada encontrado por aqui.",
   "This project isn’t in the public archive.":
@@ -173,75 +202,31 @@ const portuguese = {
   "Try again": "Tentar novamente",
   "Opening the archive": "Abrindo o arquivo",
   "RETRIEVING STORIES": "BUSCANDO HISTÓRIAS",
-  "EVERY ENDING DESERVES A RECORD": "TODO FIM MERECE UMA HISTÓRIA",
-  "Tell us what happened.": "Conta pra gente o que aconteceu.",
-  "Write it like you're explaining the project to a friend. You can also paste a README, old launch post, notes or anything else you still have.":
-    "Escreva como se estivesse explicando o projeto para um amigo. Você também pode colar um README, post antigo de lançamento, anotações ou qualquer coisa que ainda tenha.",
-  "Project name": "Nome do projeto",
-  "Your project’s story": "A história do seu projeto",
-  "What did you build? Why did you stop? What did you learn?":
-    "O que você construiu? Por que parou? O que aprendeu?",
-  "Project URL or GitHub (optional)": "Link do projeto ou GitHub (opcional)",
-  "What should happen to the project?": "O que deve acontecer com o projeto?",
-  "Creator name": "Seu nome",
-  "Creator email": "Seu e-mail",
-  "Your email stays private and is only used for moderation.":
-    "Seu e-mail fica privado e é usado apenas na moderação.",
-  "✨ Build my postmortem": "✨ Montar meu postmortem",
-  "Building your postmortem…": "Montando seu postmortem…",
-  "Couldn't build the postmortem automatically. You can still submit your story and we'll review it.":
-    "Não conseguimos montar o postmortem automaticamente. Você ainda pode enviar sua história e nós revisamos.",
-  "Submit my story": "Enviar minha história",
-  "Submit without formatting": "Enviar sem formatação",
-  "Submitting…": "Enviando…",
-  "Formatting sends only your story and project name to Google Gemini. Keep secrets and personal information out of the story.":
-    "A formatação envia apenas sua história e o nome do projeto ao Google Gemini. Não inclua segredos ou dados pessoais no texto.",
-  "NO ACCOUNT. NO SUCCESS STORY REQUIRED.":
-    "SEM CONTA. SEM PRECISAR TER DADO CERTO.",
-  "ALL SUBMISSIONS ARE REVIEWED BEFORE PUBLISHING.":
-    "TODOS OS ENVIOS PASSAM POR REVISÃO ANTES DA PUBLICAÇÃO.",
-  "Story received.": "História recebida.",
-  "Thank you for sharing it. We’ll review your story before it enters the public archive.":
-    "Obrigado por compartilhar. Vamos revisar sua história antes de colocá-la no arquivo público.",
-  "Submission reference": "Referência do envio",
-  "We couldn’t save your story. Your text is still here. Please try again.":
-    "Não conseguimos salvar sua história. Seu texto continua aqui. Tente novamente.",
-  "Too many submissions. Please try again in an hour.":
-    "Muitos envios em pouco tempo. Tente novamente em uma hora.",
-  "Use 50–15,000 characters for your story.":
-    "Use de 50 a 15.000 caracteres para contar sua história.",
-  "REVIEW BEFORE BURIAL": "REVISE ANTES DE ENTERRAR",
-  "Here’s your project’s autopsy.": "Aqui está o postmortem do seu projeto.",
-  "Review the draft. Edit anything you like; missing details can stay blank.":
-    "Revise o rascunho e ajuste o que quiser. O que estiver faltando pode ficar em branco.",
-  "Submit for review": "Enviar para revisão",
-  "Back to my story": "Voltar para minha história",
-  Edit: "Editar",
-  "Original story": "História original",
-  "One sentence description": "Descrição em uma frase",
-  Summary: "Resumo",
-  "What went wrong": "O que deu errado",
-  "What worked": "O que funcionou",
-  Lessons: "Aprendizado",
-  "Surviving assets": "O que ficou",
-  Technologies: "Tecnologias",
-  "One item per line. Leave blank if unknown.":
-    "Um item por linha. Deixe em branco se não souber.",
-  // Repository Autopsy
-  Autopsy: "Autópsia",
+
+  // Autopsy entry page
   "Repository Autopsy": "Autópsia de repositório",
-  "Enter a GitHub username. Deadfolio finds the forgotten repositories and produces an evidence-based postmortem for the ones you choose.":
-    "Digite um usuário do GitHub. O Deadfolio encontra os repositórios esquecidos e produz um postmortem baseado em evidências para os que você escolher.",
+  "Scan a public GitHub profile for forgotten projects, or paste a repository and run an evidence-based autopsy.":
+    "Analise um perfil público do GitHub em busca de projetos esquecidos, ou cole um repositório e faça uma autópsia baseada em evidências.",
   "An evidence-based postmortem of a public GitHub repository.":
     "Um postmortem baseado em evidências de um repositório público do GitHub.",
   "EVIDENCE FIRST. STORIES SECOND.": "EVIDÊNCIAS PRIMEIRO. HISTÓRIAS DEPOIS.",
-  "Enter a GitHub username. Deadfolio finds the repositories that stopped moving and, only when you ask, examines one and writes a skeptical, evidence-based postmortem.":
-    "Digite um usuário do GitHub. O Deadfolio encontra os repositórios que pararam de se mover e, só quando você pedir, examina um deles e escreve um postmortem cético, baseado em evidências.",
+  "Find the projects that stopped moving, then let one autopsy explain what happened, what survived and whether it deserves another shot.":
+    "Encontre os projetos que pararam de se mover e deixe uma autópsia explicar o que aconteceu, o que sobreviveu e se vale uma segunda chance.",
+  "Entry mode": "Modo de entrada",
+  "Find forgotten projects across a public GitHub profile.":
+    "Encontre projetos esquecidos em um perfil público do GitHub.",
+  "Already know which project you want to examine? Run an autopsy directly.":
+    "Já sabe qual projeto quer examinar? Faça a autópsia diretamente.",
   "GitHub username": "Usuário do GitHub",
   username: "usuario",
   "Enter a valid GitHub username.": "Digite um usuário válido do GitHub.",
-  "Find forgotten projects": "Encontrar projetos esquecidos",
+  "Find my forgotten projects": "Encontrar projetos esquecidos",
   "Scanning…": "Buscando…",
+  "GitHub repository URL": "Link do repositório no GitHub",
+  "That doesn’t look like a GitHub repository URL.":
+    "Isso não parece um link de repositório do GitHub.",
+  "Opening…": "Abrindo…",
+  "Run Repository Autopsy": "Fazer autópsia",
   "Too many scans from your connection. Try again in an hour.":
     "Muitas buscas a partir da sua conexão. Tente novamente em uma hora.",
   "No GitHub user with that name.": "Não existe usuário do GitHub com esse nome.",
@@ -250,19 +235,20 @@ const portuguese = {
   "GitHub could not be reached. Try again shortly.":
     "Não foi possível acessar o GitHub. Tente novamente em breve.",
   "Quota resets at": "A cota volta às",
-  Discover: "Descobrir",
+  Scan: "Analisar",
   "Up to 100 public repositories are scored from metadata alone: last push, age, archive status, forks. No AI involved.":
     "Até 100 repositórios públicos recebem uma pontuação só a partir de metadados: último push, idade, arquivamento, forks. Sem IA nessa etapa.",
-  Examine: "Examinar",
   "Pick one. Deadfolio collects the README, manifests, tree, recent activity and a dozen architecture-defining files. Secrets and build output are never read.":
     "Escolha um. O Deadfolio coleta o README, manifestos, árvore de arquivos, atividade recente e uma dúzia de arquivos que definem a arquitetura. Segredos e arquivos de build nunca são lidos.",
-  Report: "Relatório",
-  "One Gemini pass separates evidence from inference and admits what the repository cannot prove. The result is cached per commit for everyone.":
-    "Uma única passagem do Gemini separa evidência de inferência e admite o que o repositório não consegue provar. O resultado fica em cache por commit, para todo mundo.",
-  "Correct and file": "Corrigir e arquivar",
-  "You confirm or correct the cause of death in one sentence, then add it to your Deadfolio. Editing is optional.":
-    "Você confirma ou corrige a causa da morte em uma frase e adiciona ao seu Deadfolio. Editar é opcional.",
-  "SCAN RESULTS /": "RESULTADO DA BUSCA /",
+  Confirm: "Confirmar",
+  "One Gemini pass separates evidence from inference and admits what the repository cannot prove. You confirm or correct the cause of death in one sentence.":
+    "Uma única passagem do Gemini separa evidência de inferência e admite o que o repositório não consegue provar. Você confirma ou corrige a causa da morte em uma frase.",
+  Preserve: "Preservar",
+  "Add the project to your Deadfolio. The report becomes the first draft of the postmortem; editing is optional.":
+    "Adicione o projeto ao seu Deadfolio. O relatório vira o primeiro rascunho do postmortem; editar é opcional.",
+
+  // Scan results
+  "SCAN RESULTS /": "RESULTADO DA ANÁLISE /",
   "{n} repository looks forgotten": "{n} repositório parece esquecido",
   "{n} repositories look forgotten": "{n} repositórios parecem esquecidos",
   "Everything here still has a pulse": "Tudo por aqui ainda tem pulso",
@@ -275,32 +261,59 @@ const portuguese = {
     "Nenhum desses repositórios parece abandonado pelos metadados. Volte quando algum deles parar de se mover.",
   "{n} active repository hidden": "{n} repositório ativo oculto",
   "{n} active repositories hidden": "{n} repositórios ativos ocultos",
+  "Scan summary": "Resumo da análise",
+  "repositories analyzed": "repositórios analisados",
+  EXPERIMENTS: "EXPERIMENTOS",
+  FORKS: "FORKS",
+  "Experiments: all pushes happened within a week of creation and the repository has at most one star.":
+    "Experimentos: todos os pushes aconteceram na primeira semana e o repositório tem no máximo uma estrela.",
+  "Oldest untouched project": "Projeto parado há mais tempo",
+  "Most recently abandoned candidate": "Candidato a abandono mais recente",
+  "Average repository age": "Idade média dos repositórios",
+  "Untouched for a year or more": "Sem push há um ano ou mais",
+  "no pushes for {n}": "sem push há {n}",
+  "Counts come from public GitHub metadata only. “Untouched” means no push; it says nothing about whether the project succeeded.":
+    "As contagens vêm apenas dos metadados públicos do GitHub. “Parado” significa sem push; não diz nada sobre o projeto ter dado certo ou não.",
   fork: "fork",
   "last push": "último push",
-  created: "criado em",
-  "🔬 Run Autopsy": "🔬 Fazer autópsia",
-  "🔬 Find it on GitHub": "🔬 Encontrar no GitHub",
-  "Is it on GitHub?": "Está no GitHub?",
-  "Let Deadfolio read the repository instead.":
-    "Deixe o Deadfolio ler o repositório por você.",
+  "{n} ago": "há {n}",
+  age: "idade",
+  "Run Autopsy": "Fazer autópsia",
+  "Dead Score": "Dead Score",
+  "Based on inactivity, repository age, archive status and recent development signals.":
+    "Com base em inatividade, idade do repositório, status de arquivamento e sinais recentes de desenvolvimento.",
   Active: "Ativo",
-  "Possibly stale": "Possivelmente parado",
+  Stale: "Parado",
+  "Possibly abandoned": "Possivelmente abandonado",
+  "Probably abandoned": "Provavelmente abandonado",
   "Likely dead": "Provavelmente morto",
   Archived: "Arquivado",
-  "Dead score": "Índice de abandono",
+  Project: "Projeto",
+  Fork: "Fork",
+  "Template or example": "Template ou exemplo",
+  Experiment: "Experimento",
   "Archived on GitHub": "Arquivado no GitHub",
   "Disabled by GitHub": "Desativado pelo GitHub",
   "Fork of another repository": "Fork de outro repositório",
+  "Looks like a template or example": "Parece um template ou exemplo",
   "Empty repository": "Repositório vazio",
   "No pushes for {n}": "Sem push há {n}",
   "Pushed recently": "Push recente",
+  "Created recently": "Criado recentemente",
   "Active for only {n}": "Ativo por apenas {n}",
   "All commits on a single day": "Todos os commits em um único dia",
   "Created {n} ago": "Criado há {n}",
   "1 open issue left behind": "1 issue aberta deixada para trás",
   "{n} open issues left behind": "{n} issues abertas deixadas para trás",
+
+  // Repository page
   "REPOSITORY /": "REPOSITÓRIO /",
-  "Back to the scan": "Voltar para a busca",
+  "Back to the scan": "Voltar para a análise",
+  "Back to the autopsy": "Voltar para a autópsia",
+  "Repository not found. Check the owner and name, and make sure the repository is public.":
+    "Repositório não encontrado. Confira o dono e o nome, e verifique se o repositório é público.",
+  "This repository does not appear to be public.":
+    "Este repositório não parece ser público.",
   "This repository looks active. An autopsy is still possible, but it will read as a check-up rather than a postmortem.":
     "Este repositório parece ativo. Ainda dá para fazer a autópsia, mas ela vai soar mais como um check-up do que como um postmortem.",
   "This repository has no commits to examine.":
@@ -311,12 +324,12 @@ const portuguese = {
   "Deadfolio reads the public README, manifests, tree and a handful of architecture-defining files, then asks Gemini for a skeptical, evidence-based report. One generation per repository version; results are cached for everyone.":
     "O Deadfolio lê o README público, manifestos, árvore de arquivos e alguns arquivos que definem a arquitetura, depois pede ao Gemini um relatório cético e baseado em evidências. Uma geração por versão do repositório; o resultado fica em cache para todo mundo.",
   "REPOSITORY CHANGED": "O REPOSITÓRIO MUDOU",
-  "New activity detected. Run a new autopsy?":
-    "Nova atividade detectada. Fazer uma nova autópsia?",
+  "New activity detected since this autopsy.":
+    "Nova atividade detectada desde esta autópsia.",
   "The report below is from": "O relatório abaixo é do commit",
   "The default branch has moved since then.":
     "A branch principal avançou desde então.",
-  "Run a new autopsy": "Fazer nova autópsia",
+  "Run a fresh autopsy": "Fazer uma nova autópsia",
   "Examining the repository…": "Examinando o repositório…",
   "Collecting evidence, then one Gemini pass. Usually under a minute.":
     "Coletando evidências e fazendo uma passagem do Gemini. Costuma levar menos de um minuto.",
@@ -334,16 +347,18 @@ const portuguese = {
     "A análise não foi concluída. Tente mais uma vez em um minuto.",
   "We couldn’t produce a reliable report for this repository.":
     "Não conseguimos produzir um relatório confiável para este repositório.",
-  "Autopsies are not enabled on this deployment.":
-    "As autópsias não estão habilitadas nesta instalação.",
+  "Autopsies are not enabled on this deployment. Set GEMINI_API_KEY on the server to turn them on.":
+    "As autópsias não estão habilitadas nesta instalação. Defina GEMINI_API_KEY no servidor para ativá-las.",
   "GitHub is rate-limiting us right now. Repository browsing still works; try the autopsy again shortly.":
     "O GitHub está limitando nossas requisições agora. A navegação pelos repositórios continua funcionando; tente a autópsia de novo em breve.",
-  "This repository is not publicly accessible.":
-    "Este repositório não está acessível publicamente.",
   "The connection dropped before the report arrived. Try again.":
     "A conexão caiu antes do relatório chegar. Tente novamente.",
+
+  // Report
   "REPOSITORY AUTOPSY /": "AUTÓPSIA DO REPOSITÓRIO /",
-  "{n}% confidence": "{n}% de confiança",
+  "low confidence": "confiança baixa",
+  "medium confidence": "confiança média",
+  "high confidence": "confiança alta",
   Generated: "Gerado em",
   "{n} files analyzed": "{n} arquivos analisados",
   "This report was generated in Portuguese for an earlier visitor.":
@@ -359,17 +374,23 @@ const portuguese = {
   "FILES ANALYZED": "ARQUIVOS ANALISADOS",
   "01 / VERDICT": "01 / VEREDITO",
   Verdict: "Veredito",
+  "Last meaningful activity:": "Última atividade relevante:",
+  today: "hoje",
   Evidence: "Evidências",
   "02 / THE OBJECT": "02 / O OBJETO",
   "What Was This?": "O que era isso?",
   "Nothing observable was documented.": "Nada observável foi documentado.",
-  "03 / THE IDEA": "03 / A IDEIA",
-  "Was the Idea Good?": "A ideia era boa?",
-  Strong: "Forte",
-  Promising: "Promissora",
-  Questionable: "Questionável",
-  Weak: "Fraca",
+  "03 / THE PRODUCT": "03 / O PRODUTO",
+  "Product Assessment": "Avaliação do produto",
+  "Strong problem": "Problema forte",
+  "Promising problem": "Problema promissor",
+  "Questionable problem": "Problema questionável",
+  "Weak problem": "Problema fraco",
   "Insufficient evidence": "Evidência insuficiente",
+  "Strong differentiation": "Diferenciação forte",
+  "Reasonable differentiation": "Diferenciação razoável",
+  "Weak differentiation": "Diferenciação fraca",
+  "Unclear differentiation": "Diferenciação incerta",
   "04 / THE CODE": "04 / O CÓDIGO",
   "Technical Condition": "Condição técnica",
   Overall: "Geral",
@@ -377,6 +398,8 @@ const portuguese = {
   Maintainability: "Manutenibilidade",
   Completeness: "Completude",
   Documentation: "Documentação",
+  "Sub-scores are shown only where the repository gives enough evidence to support them.":
+    "As notas parciais só aparecem quando o repositório dá evidências suficientes para sustentá-las.",
   "05 / THE GOOD": "05 / O QUE ESTAVA BOM",
   "What Was Good": "O que estava bom",
   "No clear strengths could be supported by evidence.":
@@ -386,10 +409,8 @@ const portuguese = {
   "No clear weaknesses could be supported by evidence.":
     "Nenhum ponto fraco claro pôde ser sustentado por evidências.",
   "07 / THE END": "07 / O FIM",
-  "Likely Cause of Death": "Causa provável da morte",
-  "low confidence": "confiança baixa",
-  "medium confidence": "confiança média",
-  "high confidence": "confiança alta",
+  "Possible Cause of Death": "Possível causa da morte",
+  "INFERENCE, NOT EVIDENCE": "INFERÊNCIA, NÃO EVIDÊNCIA",
   Unknown: "Desconhecida",
   "The repository does not establish why development stopped. Only the creator can answer that.":
     "O repositório não mostra por que o desenvolvimento parou. Só quem criou pode responder isso.",
@@ -399,30 +420,59 @@ const portuguese = {
   "09 / THE FUTURE": "09 / O FUTURO",
   "Revival Potential": "Potencial de retomada",
   "Revival potential": "Potencial de retomada",
+  "Not worth reviving": "Não vale retomar",
+  Possible: "Possível",
+  Promising: "Promissor",
+  Strong: "Forte",
+  "One direction:": "Uma direção:",
   "10 / THE GAPS": "10 / AS LACUNAS",
-  Unknowns: "O que não sabemos",
-  "The repository leaves no obvious gaps.":
-    "O repositório não deixa lacunas óbvias.",
+  "What We Cannot Know": "O que não dá para saber",
+  "Users, revenue, the creator’s motivation and the real reason development stopped cannot be determined from the repository.":
+    "Usuários, receita, a motivação de quem criou e o motivo real de o desenvolvimento ter parado não podem ser determinados a partir do repositório.",
+
+  // Confirmation and publishing
   "11 / THE CREATOR": "11 / QUEM CRIOU",
-  "Did we get the cause of death right?": "Acertamos a causa da morte?",
+  "Did we get the cause of death right?": "A causa da morte faz sentido?",
   "Pretty much": "Mais ou menos isso",
-  "Not really": "Não exatamente",
+  "Not really": "Não foi isso",
   "What actually killed it?": "O que realmente matou o projeto?",
   "One or two sentences is plenty.": "Uma ou duas frases bastam.",
-  "Your answer replaces the inferred cause everywhere it is shown.":
-    "Sua resposta substitui a causa inferida em todos os lugares onde ela aparece.",
+  "Your answer replaces the inferred cause everywhere it is shown, and is labeled as the creator’s account.":
+    "Sua resposta substitui a causa inferida em todos os lugares onde ela aparece e é identificada como o relato de quem criou.",
   "Add to my Deadfolio": "Adicionar ao meu Deadfolio",
   "The report becomes the first draft of your postmortem. Editing is optional.":
     "O relatório vira o primeiro rascunho do seu postmortem. Editar é opcional.",
-  "FILE THIS POSTMORTEM": "ARQUIVAR ESTE POSTMORTEM",
+  "PUBLISH TO THE GRAVEYARD": "PUBLICAR NO CEMITÉRIO",
+  "Display name (optional)": "Nome de exibição (opcional)",
+  "What should happen to the project?": "O que deve acontecer com o projeto?",
+  "Publishing is immediate and public. Deadfolio does not verify repository ownership yet, so the record is labeled as unverified.":
+    "A publicação é imediata e pública. O Deadfolio ainda não verifica a propriedade do repositório, então o registro é identificado como não verificado.",
   Publish: "Publicar",
-  "Filing…": "Arquivando…",
+  "Publishing…": "Publicando…",
   "Edit details": "Editar detalhes",
-  "Autopsy filed.": "Autópsia arquivada.",
-  "We’ll review it before it enters the public archive. The cause of death you confirmed is the one we keep.":
-    "Vamos revisar antes de entrar no arquivo público. A causa da morte que você confirmou é a que fica.",
-  "We couldn’t file this autopsy. Your details are still here. Please try again.":
-    "Não conseguimos arquivar esta autópsia. Seus dados continuam aqui. Tente novamente.",
+  "EDIT DETAILS": "EDITAR DETALHES",
+  "Some edited details are too long. Shorten them before publishing.":
+    "Alguns detalhes editados estão longos demais. Resuma antes de publicar.",
+  "Too many publications from your connection. Please try again in an hour.":
+    "Muitas publicações a partir da sua conexão. Tente novamente em uma hora.",
+  "We couldn’t publish this autopsy. Your details are still here. Please try again.":
+    "Não conseguimos publicar esta autópsia. Seus dados continuam aqui. Tente novamente.",
+  "Added to your Deadfolio.": "Adicionado ao seu Deadfolio.",
+  "The project is public in the Graveyard now. It is marked as filed by an unverified creator, because Deadfolio cannot yet prove who owns a repository.":
+    "O projeto já está público no Cemitério. Ele aparece como compartilhado por alguém não verificado, porque o Deadfolio ainda não consegue provar quem é dono de um repositório.",
+  "Open the postmortem": "Abrir o postmortem",
+
+  // Draft editor
+  "Project name": "Nome do projeto",
+  "One sentence description": "Descrição em uma frase",
+  Summary: "Resumo",
+  "What went wrong": "O que deu errado",
+  "What worked": "O que funcionou",
+  Lessons: "Aprendizado",
+  "Surviving assets": "O que ficou",
+  Technologies: "Tecnologias",
+  "One item per line. Leave blank if unknown.":
+    "Um item por linha. Deixe em branco se não souber.",
 } as const;
 export type MessageKey = keyof typeof portuguese;
 export const en = Object.fromEntries(
@@ -437,7 +487,7 @@ export function localePath(locale: Locale, path: string) {
   if (
     !path.startsWith("/") ||
     path.startsWith("//") ||
-    /^\/(admin|api|media)(\/|$)/.test(path)
+    /^\/api(\/|$)/.test(path)
   )
     return path;
   const clean = path.replace(/^\/pt(?=\/|$)/, "") || "/";
