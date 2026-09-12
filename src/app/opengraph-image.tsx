@@ -30,7 +30,9 @@ export default function Image() {
         <span>Good projects die.</span>
         <span style={{ color: "#a2a59a" }}>Their work doesn’t have to.</span>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 32 }}>
+      <div
+        style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 32 }}
+      >
         <div
           style={{
             width: 36,

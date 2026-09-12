@@ -7,7 +7,14 @@ export function BrandMark({
   size?: number;
 }) {
   return (
-    <svg className={className} viewBox="0 0 64 64" fill="none" aria-hidden="true" width={size} height={size}>
+    <svg
+      className={className}
+      viewBox="0 0 64 64"
+      fill="none"
+      aria-hidden="true"
+      width={size}
+      height={size}
+    >
       {/* Blueprint grid & axis guidelines */}
       <g stroke="#34392e" strokeWidth="0.8" opacity="0.85">
         <line x1="32" y1="2" x2="32" y2="62" strokeDasharray="2 3" />
@@ -26,23 +33,74 @@ export function BrandMark({
         <line x1="53" y1="3" x2="53" y2="7" />
         <line x1="9" y1="59" x2="13" y2="59" />
         <line x1="51" y1="59" x2="55" y2="59" />
-        <path d="M47 13 A 8 8 0 0 1 53 19" fill="none" strokeDasharray="1.5 1.5" />
+        <path
+          d="M47 13 A 8 8 0 0 1 53 19"
+          fill="none"
+          strokeDasharray="1.5 1.5"
+        />
       </g>
 
       {/* Stone Foundation / Plinth */}
-      <polygon points="10,59 54,59 51,55 13,55" fill="#181c16" stroke="#34392e" strokeWidth="0.8" />
-      <polygon points="14,55 50,55 47,51 17,51" fill="#22281e" stroke="#34392e" strokeWidth="0.8" />
+      <polygon
+        points="10,59 54,59 51,55 13,55"
+        fill="#181c16"
+        stroke="#34392e"
+        strokeWidth="0.8"
+      />
+      <polygon
+        points="14,55 50,55 47,51 17,51"
+        fill="#22281e"
+        stroke="#34392e"
+        strokeWidth="0.8"
+      />
 
       {/* Obelisk Lower Shaft: Left facet (light bone) & Right facet (shaded bone) */}
-      <polygon points="32,26 19,26 17,51 32,51" fill="#eeeee6" stroke="#111310" strokeWidth="0.6" />
-      <polygon points="32,26 45,26 47,51 32,51" fill="#bec2b6" stroke="#111310" strokeWidth="0.6" />
-      <line x1="19" y1="26" x2="45" y2="26" stroke="#111310" strokeWidth="1.2" />
+      <polygon
+        points="32,26 19,26 17,51 32,51"
+        fill="#eeeee6"
+        stroke="#111310"
+        strokeWidth="0.6"
+      />
+      <polygon
+        points="32,26 45,26 47,51 32,51"
+        fill="#bec2b6"
+        stroke="#111310"
+        strokeWidth="0.6"
+      />
+      <line
+        x1="19"
+        y1="26"
+        x2="45"
+        y2="26"
+        stroke="#111310"
+        strokeWidth="1.2"
+      />
 
       {/* Obelisk Pyramidion Cap */}
-      <polygon points="32,5 20,20 32,23" fill="#f8f8f4" stroke="#111310" strokeWidth="0.6" />
-      <polygon points="20,20 19,26 32,26 32,23" fill="#e0e3da" stroke="#111310" strokeWidth="0.6" />
-      <polygon points="32,5 44,20 32,23" fill="#cad0c4" stroke="#111310" strokeWidth="0.6" />
-      <polygon points="44,20 45,26 32,26 32,23" fill="#9da296" stroke="#111310" strokeWidth="0.6" />
+      <polygon
+        points="32,5 20,20 32,23"
+        fill="#f8f8f4"
+        stroke="#111310"
+        strokeWidth="0.6"
+      />
+      <polygon
+        points="20,20 19,26 32,26 32,23"
+        fill="#e0e3da"
+        stroke="#111310"
+        strokeWidth="0.6"
+      />
+      <polygon
+        points="32,5 44,20 32,23"
+        fill="#cad0c4"
+        stroke="#111310"
+        strokeWidth="0.6"
+      />
+      <polygon
+        points="44,20 45,26 32,26 32,23"
+        fill="#9da296"
+        stroke="#111310"
+        strokeWidth="0.6"
+      />
 
       {/* Center Ridge Crease */}
       <line x1="32" y1="5" x2="32" y2="51" stroke="#111310" strokeWidth="1.1" />
@@ -81,8 +139,22 @@ export function BrandMark({
       {/* Center Crosshair Target */}
       <circle cx="32" cy="31" r="1.6" fill="#111310" />
       <circle cx="32" cy="31" r="0.6" fill="#c6f36b" />
-      <line x1="32" y1="28" x2="32" y2="34" stroke="#111310" strokeWidth="0.8" />
-      <line x1="29" y1="31" x2="35" y2="31" stroke="#111310" strokeWidth="0.8" />
+      <line
+        x1="32"
+        y1="28"
+        x2="32"
+        y2="34"
+        stroke="#111310"
+        strokeWidth="0.8"
+      />
+      <line
+        x1="29"
+        y1="31"
+        x2="35"
+        y2="31"
+        stroke="#111310"
+        strokeWidth="0.8"
+      />
     </svg>
   );
 }
